@@ -293,6 +293,58 @@ input[type=range]::-webkit-slider-thumb{
 .agenda-task-ref{font-size:0.62rem;color:var(--text-muted);font-weight:600;}
 .agenda-overdue-badge{font-size:0.6rem;font-weight:800;color:var(--red);background:rgba(200,0,42,0.1);border:1px solid rgba(200,0,42,0.3);padding:2px 7px;border-radius:20px;}
 
+/* DATE INPUT — visible, clean, works everywhere */
+.date-input-wrap{position:relative;width:100%;}
+.date-input-wrap input[type=date]{
+  width:100%;height:46px;
+  border:2px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--card);color:var(--text);
+  font-family:'Nunito',sans-serif;font-size:0.95rem;font-weight:700;
+  padding:0 14px;outline:none;cursor:pointer;
+  -webkit-appearance:none;appearance:none;
+  box-sizing:border-box;
+}
+.date-input-wrap input[type=date]:focus{border-color:var(--accent);}
+.date-input-wrap input[type=date]::-webkit-calendar-picker-indicator{
+  opacity:1;cursor:pointer;font-size:1.1rem;
+  filter:invert(0.5);
+}
+.date-input-wrap.due input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.3) sepia(1) saturate(5) hue-rotate(320deg);}
+.date-input-wrap.scheduled input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.3) sepia(1) saturate(5) hue-rotate(200deg);}
+.date-clear-btn{
+  position:absolute;right:36px;top:50%;transform:translateY(-50%);
+  background:none;border:none;color:var(--text-dim);cursor:pointer;
+  font-size:0.8rem;padding:4px;z-index:1;line-height:1;
+}
+.date-clear-btn:hover{color:var(--red);}
+
+/* MULTI-DAY badge */
+.multiday-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(79,63,240,0.12);color:var(--accent);border:1px solid rgba(79,63,240,0.3);border-radius:20px;padding:2px 8px;font-size:0.6rem;font-weight:800;}
+
+/* PLAN WEEK */
+.plan-sub-card{
+  background:var(--card);border:2px solid var(--border);border-radius:var(--radius-sm);
+  padding:8px 10px;margin-bottom:5px;cursor:grab;user-select:none;
+  transition:box-shadow 0.15s, transform 0.15s;
+  -webkit-user-select:none;
+}
+.plan-sub-card:active{cursor:grabbing;}
+.plan-sub-card.dragging{opacity:0.5;transform:scale(0.97);}
+.plan-day-col{
+  flex:1;min-width:90px;display:flex;flex-direction:column;
+  background:var(--surface);border:2px solid var(--border);
+  border-radius:var(--radius-sm);overflow:hidden;
+}
+.plan-day-col.today-plan{border-color:var(--accent);}
+.plan-day-col.drag-over{background:rgba(79,63,240,0.08);border-color:var(--accent);}
+.plan-day-header{
+  padding:8px;text-align:center;background:var(--card);
+  border-bottom:2px solid var(--border);flex-shrink:0;
+}
+.plan-day-body{flex:1;overflow-y:auto;padding:5px;}
+.plan-cap-bar{height:4px;background:#d0d0d0;border-radius:2px;margin-top:4px;overflow:hidden;}
+.plan-cap-fill{height:100%;border-radius:2px;transition:width 0.3s;}
+
 /* CALENDAR */
 .cal-week-grid{display:grid;grid-template-columns:36px repeat(7,1fr);border:2px solid var(--border);border-radius:var(--radius);overflow:hidden;}
 .cal-day-header{background:var(--surface);border-bottom:2px solid var(--border);padding:6px 2px;text-align:center;border-right:1px solid var(--border);}
@@ -478,6 +530,33 @@ input[type=range]::-webkit-slider-thumb{
 
       <!-- SUBTASK LIST -->
       <div id="agenda-list"></div>
+    </div>
+
+    <!-- PLAN WEEK VIEW -->
+    <div class="view" id="view-planweek">
+      <div style="margin-bottom:12px;">
+        <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:1rem;margin-bottom:4px;">📆 Planificar Semana</div>
+        <div style="font-size:0.7rem;color:var(--text-muted);">Arrastra subtareas al día en que las harás</div>
+      </div>
+
+      <div style="display:flex;gap:10px;height:calc(100vh - 200px);">
+        <!-- LEFT: Unscheduled backlog -->
+        <div style="width:140px;flex-shrink:0;display:flex;flex-direction:column;">
+          <div style="font-size:0.6rem;font-weight:900;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">
+            📋 Sin programar
+          </div>
+          <div id="plan-backlog"
+            style="flex:1;overflow-y:auto;background:var(--surface);border:2px solid var(--border);border-radius:var(--radius-sm);padding:6px;"
+            ondragover="event.preventDefault()"
+            ondrop="dropOnBacklog(event)">
+          </div>
+        </div>
+
+        <!-- RIGHT: Week days -->
+        <div style="flex:1;overflow-x:auto;">
+          <div id="plan-week-cols" style="display:flex;gap:6px;height:100%;min-width:420px;"></div>
+        </div>
+      </div>
     </div>
 
     <!-- CALENDAR VIEW -->
@@ -671,6 +750,9 @@ input[type=range]::-webkit-slider-thumb{
     <button class="nav-btn" onclick="switchView('agenda',this);initAgendaView()">
       <span class="nav-icon">📋</span><span class="nav-label">Agenda</span>
     </button>
+    <button class="nav-btn" onclick="switchView('planweek',this);initPlanWeek()">
+      <span class="nav-icon">📆</span><span class="nav-label">Planificar</span>
+    </button>
     <button class="nav-btn" onclick="switchView('calendar',this);initCalendar()">
       <span class="nav-icon">📅</span><span class="nav-label">Calendar</span>
     </button>
@@ -755,19 +837,13 @@ input[type=range]::-webkit-slider-thumb{
       </select>
     </div>
     <div class="field">
-      <label class="field-label">📅 Fecha límite (opcional)</label>
-      <div style="position:relative;">
+      <label class="field-label">🚨 Fecha límite (opcional)</label>
+      <div class="date-input-wrap due">
         <input type="date" id="task-due-native"
-          style="position:absolute;opacity:0;width:100%;height:100%;top:0;left:0;cursor:pointer;z-index:2;"
           onchange="onTaskDueChange(this.value)">
-        <div class="input" id="task-due-display"
-          onclick="document.getElementById('task-due-native').showPicker?document.getElementById('task-due-native').showPicker():document.getElementById('task-due-native').click()"
-          style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none;">
-          <span id="task-due-display-text" style="color:var(--text-dim);">Seleccionar fecha</span>
-          <span>📅</span>
-        </div>
-        <input type="hidden" id="task-due">
+        <button class="date-clear-btn" onclick="onTaskDueChange('');document.getElementById('task-due-native').value='';" title="Borrar">✕</button>
       </div>
+      <input type="hidden" id="task-due">
       <div id="overload-warning" style="display:none;margin-top:10px;"></div>
     </div>
     <!-- SUBTASKS -->
@@ -827,12 +903,67 @@ input[type=range]::-webkit-slider-thumb{
       <input type="range" min="1" max="5" value="3" id="sub-slider-impact" oninput="updateSubSlider('impact',this.value)">
     </div>
 
-    <!-- SUGGESTED DAY -->
-    <div id="sub-suggested-day" style="margin-top:16px;"></div>
+    <!-- DURATION + DATES -->
+    <div style="margin-top:16px;background:var(--bg);border:2px solid var(--border);border-radius:var(--radius-sm);padding:14px;">
+
+      <!-- Duration -->
+      <div class="field" style="margin-bottom:14px;">
+        <label class="field-label">⏱ Duración estimada (min)</label>
+        <input type="number" class="input" id="sub-mins-input" placeholder="ej: 25" min="1" max="2880"
+          oninput="recheckSubCapacity(editingSubIdx)"
+          style="text-align:center;font-weight:900;font-size:1.1rem;">
+        <div id="sub-multiday-info" style="display:none;margin-top:6px;"></div>
+      </div>
+
+      <!-- Due Date -->
+      <div class="field" style="margin-bottom:14px;">
+        <label class="field-label">🚨 Fecha límite — ¿cuándo debe estar lista?</label>
+        <div class="date-input-wrap due">
+          <input type="date" id="sub-due-native"
+            onchange="onSubDueChange(this.value)"
+            placeholder="Selecciona fecha">
+          <button class="date-clear-btn" onclick="onSubDueChange('');document.getElementById('sub-due-native').value='';" title="Borrar">✕</button>
+        </div>
+        <input type="hidden" id="sub-due-date">
+      </div>
+
+      <!-- Scheduled Start Date -->
+      <div class="field" style="margin-bottom:8px;">
+        <label class="field-label">📅 Fecha de inicio — ¿qué día empiezas?</label>
+        <div style="font-size:0.65rem;color:var(--text-muted);margin-bottom:6px;">Deja vacío para programar desde "Planificar Semana"</div>
+        <div class="date-input-wrap scheduled">
+          <input type="date" id="sub-scheduled-native"
+            onchange="onSubScheduledChange(this.value)">
+          <button class="date-clear-btn" onclick="onSubScheduledChange('');document.getElementById('sub-scheduled-native').value='';" title="Borrar">✕</button>
+        </div>
+        <input type="hidden" id="sub-scheduled-date">
+      </div>
+
+      <!-- Scheduled End Date (multi-day) -->
+      <div class="field" id="sub-end-date-field" style="margin-bottom:4px;display:none;">
+        <label class="field-label">📅 Fecha de fin — ¿cuándo terminas? <span style="font-size:0.6rem;color:var(--text-muted);">(opcional, para tareas multi-día)</span></label>
+        <div class="date-input-wrap">
+          <input type="date" id="sub-end-native"
+            onchange="onSubEndChange(this.value)">
+          <button class="date-clear-btn" onclick="onSubEndChange('');document.getElementById('sub-end-native').value='';" title="Borrar">✕</button>
+        </div>
+        <input type="hidden" id="sub-end-date">
+      </div>
+      <button onclick="toggleMultiDay()" id="btn-multiday"
+        style="background:none;border:none;font-size:0.68rem;font-weight:800;color:var(--accent);cursor:pointer;padding:4px 0;text-decoration:underline;">
+        + ¿La subtarea abarca varios días?
+      </button>
+
+      <!-- Capacity warning -->
+      <div id="sub-cap-inline-warn" style="display:none;font-size:0.72rem;font-weight:700;margin-top:10px;padding:8px 10px;border-radius:8px;"></div>
+
+      <!-- Suggested day -->
+      <div id="sub-suggested-day" style="margin-top:10px;"></div>
+    </div>
 
     <input type="hidden" id="sub-editing-task-id">
     <input type="hidden" id="sub-editing-subtask-id">
-    <button class="btn btn-primary" onclick="saveSubtaskPriority()" style="margin-top:12px;">GUARDAR PRIORIDAD</button>
+    <button class="btn btn-primary" onclick="saveSubtaskPriority()" style="margin-top:14px;">GUARDAR</button>
   </div>
 </div>
 
@@ -861,18 +992,10 @@ input[type=range]::-webkit-slider-thumb{
     </div>
     <div class="field">
       <label class="field-label">📅 Fecha</label>
-      <div style="position:relative;">
-        <input type="date" id="block-date-native"
-          style="position:absolute;opacity:0;width:100%;height:100%;top:0;left:0;cursor:pointer;z-index:2;"
-          onchange="onBlockDateChange(this.value)">
-        <div class="input" id="block-date-display"
-          onclick="document.getElementById('block-date-native').showPicker?document.getElementById('block-date-native').showPicker():document.getElementById('block-date-native').click()"
-          style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none;">
-          <span id="block-date-display-text" style="color:var(--text-dim);">Seleccionar fecha</span>
-          <span>📅</span>
-        </div>
-        <input type="hidden" id="block-date">
+      <div class="date-input-wrap scheduled">
+        <input type="date" id="block-date-native" onchange="onBlockDateChange(this.value)">
       </div>
+      <input type="hidden" id="block-date">
     </div>
     <div class="field">
       <label class="field-label">Color</label>
@@ -1004,17 +1127,10 @@ function handleDateMask(input){
 }
 
 function onTaskDueChange(isoVal){
-  // Called when native date picker fires
-  document.getElementById('task-due').value = isoVal;
-  document.getElementById('task-due-native').value = isoVal;
-  const displayText = document.getElementById('task-due-display-text');
+  document.getElementById('task-due').value = isoVal||'';
   if(isoVal){
-    displayText.textContent = formatDate(isoVal);
-    displayText.style.color = 'var(--text)';
     checkAndShowOverloadWarning();
   } else {
-    displayText.textContent = 'Seleccionar fecha';
-    displayText.style.color = 'var(--text-dim)';
     document.getElementById('overload-warning').style.display='none';
   }
 }
@@ -1141,8 +1257,6 @@ function initTaskModal(){
   document.getElementById('task-desc').value = '';
   document.getElementById('task-due').value = '';
   document.getElementById('task-due-native').value = '';
-  const ddt = document.getElementById('task-due-display-text');
-  if(ddt){ ddt.textContent='Seleccionar fecha'; ddt.style.color='var(--text-dim)'; }
   document.getElementById('task-status').value = 'TODO';
   document.getElementById('btn-delete-task').style.display = 'none';
   // reset sliders
@@ -1183,11 +1297,6 @@ function openEditTask(taskId){
   document.getElementById('task-desc').value = t.description||'';
   document.getElementById('task-due').value = t.due||'';
   document.getElementById('task-due-native').value = t.due||'';
-  const ddtE = document.getElementById('task-due-display-text');
-  if(ddtE){
-    ddtE.textContent = t.due ? formatDate(t.due) : 'Seleccionar fecha';
-    ddtE.style.color = t.due ? 'var(--text)' : 'var(--text-dim)';
-  }
   document.getElementById('task-status').value = t.status;
   document.getElementById('btn-delete-task').style.display = 'flex';
   ['financial','health','momentum','learning'].forEach(k=>{
@@ -1404,7 +1513,11 @@ function renderModalSubtasks(){
         <!-- Info chips -->
         <div style="display:flex;align-items:center;gap:6px;padding:0 10px;flex-shrink:0;">
           ${hasMins?`<span style="font-size:0.65rem;font-weight:800;color:var(--text-muted);">⏱${s.mins}m</span>`:''}
-          ${hasDate?`<span style="font-size:0.65rem;font-weight:800;color:var(--accent);">📅${formatDate(s.date)}</span>`:'<span style="font-size:0.6rem;color:var(--text-dim);">Sin fecha</span>'}
+          ${s.scheduledDate?(s.scheduledEndDate?
+              `<span class="multiday-badge">📅${formatDate(s.scheduledDate)}→${formatDate(s.scheduledEndDate)}</span>`:
+              `<span style="font-size:0.6rem;font-weight:800;color:var(--accent);">📅${formatDate(s.scheduledDate)}</span>`):
+            s.dueDate?`<span style="font-size:0.6rem;font-weight:800;color:var(--red);">🚨${formatDate(s.dueDate)}</span>`:
+            '<span style="font-size:0.6rem;color:var(--text-dim);">Sin programar</span>'}
         </div>
       </div>
     </div>`;
@@ -1441,6 +1554,33 @@ function openSubtaskPriorityModal(i){
   // Set mins + date if present
   document.getElementById('sub-editing-task-id').value = editId||'';
   document.getElementById('sub-editing-subtask-id').value = s.id;
+  // Mins
+  document.getElementById('sub-mins-input').value = s.mins||'';
+  // Due date
+  document.getElementById('sub-due-native').value = s.dueDate||'';
+  document.getElementById('sub-due-date').value = s.dueDate||'';
+  // Scheduled date
+  document.getElementById('sub-scheduled-native').value = s.scheduledDate||'';
+  document.getElementById('sub-scheduled-date').value = s.scheduledDate||'';
+  // End date (multi-day)
+  const endVal = s.scheduledEndDate||'';
+  document.getElementById('sub-end-native').value = endVal;
+  document.getElementById('sub-end-date').value = endVal;
+  const endField = document.getElementById('sub-end-date-field');
+  const multidayBtn = document.getElementById('btn-multiday');
+  if(endVal){
+    if(endField) endField.style.display='block';
+    if(multidayBtn) multidayBtn.textContent='− Ocultar fecha de fin';
+  } else {
+    if(endField) endField.style.display='none';
+    if(multidayBtn) multidayBtn.textContent='+ ¿La subtarea abarca varios días?';
+  }
+  // Multi-day info
+  const infoEl=document.getElementById('sub-multiday-info');
+  if(infoEl) infoEl.style.display='none';
+  // Reset warn
+  const warn = document.getElementById('sub-cap-inline-warn');
+  if(warn) warn.style.display='none';
   refreshSubScore(s, parentTask);
   renderSubSuggestedDay(i, parentTask);
   openModal('modal-subtask-priority');
@@ -1586,6 +1726,98 @@ function onSubDateModalChange(isoVal, idx){
   }
 }
 
+function onSubDueChange(isoVal){
+  document.getElementById('sub-due-date').value = isoVal||'';
+  if(document.getElementById('sub-scheduled-date').value){
+    checkScheduledVsDue(document.getElementById('sub-scheduled-date').value);
+  }
+}
+
+function onSubScheduledChange(isoVal){
+  document.getElementById('sub-scheduled-date').value = isoVal||'';
+  if(isoVal) checkScheduledVsDue(isoVal);
+  // Show end date field hint
+  if(isoVal){
+    document.getElementById('sub-end-date-field').style.display = 'block';
+    document.getElementById('btn-multiday').style.display = 'none';
+  }
+  // Capacity check
+  const mins = parseInt(document.getElementById('sub-mins-input')?.value)||0;
+  const warn = document.getElementById('sub-cap-inline-warn');
+  if(!warn) return;
+  if(mins && isoVal){
+    const endIso = document.getElementById('sub-end-date').value;
+    if(endIso && endIso > isoVal){
+      // Multi-day — split mins across days
+      const d1 = new Date(isoVal+'T12:00:00');
+      const d2 = new Date(endIso+'T12:00:00');
+      const days = Math.round((d2-d1)/(1000*60*60*24))+1;
+      const minsPerDay = Math.ceil(mins/days);
+      warn.innerHTML=`<span style="color:var(--accent);">📅 Subtarea multi-día: ${days} días · ~${minsPerDay}min/día · Total ${mins}min</span>`;
+      warn.style.display='block';
+    } else {
+      const d = new Date(isoVal+'T12:00:00');
+      const cap = getDayCapacityMins(d.getDay());
+      const load = getDayLoad(isoVal);
+      const free = cap-load;
+      if(mins>cap){
+        warn.innerHTML=`<span style="color:var(--red);">🚨 ${mins}min supera la capacidad del día (${cap}min disponibles)</span>`;
+      } else if(mins>free){
+        warn.innerHTML=`<span style="color:var(--yellow);">⚠️ Solo hay ${free}min libres ese día</span>`;
+      } else {
+        warn.innerHTML=`<span style="color:var(--green);">✓ Cabe bien — ${free}min libres</span>`;
+      }
+      warn.style.display='block';
+    }
+  } else {
+    warn.style.display='none';
+  }
+}
+
+function onSubEndChange(isoVal){
+  document.getElementById('sub-end-date').value = isoVal||'';
+  // Recalc multi-day info
+  const scheduled = document.getElementById('sub-scheduled-date').value;
+  if(scheduled) onSubScheduledChange(scheduled);
+  // Show multi-day badge in mins field
+  const mins = parseInt(document.getElementById('sub-mins-input')?.value)||0;
+  const infoEl = document.getElementById('sub-multiday-info');
+  if(infoEl && isoVal && scheduled && mins){
+    const d1=new Date(scheduled+'T12:00:00');
+    const d2=new Date(isoVal+'T12:00:00');
+    const days=Math.max(1,Math.round((d2-d1)/(1000*60*60*24))+1);
+    infoEl.innerHTML=`<span class="multiday-badge">📅 ${days} días · ~${Math.ceil(mins/days)}min/día</span>`;
+    infoEl.style.display='block';
+  } else if(infoEl){ infoEl.style.display='none'; }
+}
+
+function toggleMultiDay(){
+  const field = document.getElementById('sub-end-date-field');
+  const btn = document.getElementById('btn-multiday');
+  const visible = field.style.display!=='none';
+  field.style.display = visible?'none':'block';
+  btn.textContent = visible?'+ ¿La subtarea abarca varios días?':'− Ocultar fecha de fin';
+}
+
+function checkScheduledVsDue(scheduledIso){
+  const dueIso = document.getElementById('sub-due-date')?.value;
+  if(!dueIso || !scheduledIso) return;
+  if(scheduledIso > dueIso){
+    const warn = document.getElementById('sub-cap-inline-warn');
+    if(warn){
+      warn.textContent = `⚠️ La fecha programada (${formatDate(scheduledIso)}) es posterior a la fecha límite (${formatDate(dueIso)})`;
+      warn.style.color = 'var(--red)'; warn.style.display='block';
+    }
+  }
+}
+
+function clearSubScheduledDate(){
+  document.getElementById('sub-scheduled-date').value='';
+  document.getElementById('sub-scheduled-native').value='';
+  document.getElementById('sub-end-date').value='';
+  document.getElementById('sub-end-native').value='';
+}
+
 function recheckSubCapacity(idx){
   const mins = parseInt(document.getElementById('sub-mins-input')?.value)||0;
   if(!mins) return;
@@ -1607,10 +1839,11 @@ function saveSubtaskPriority(){
   s.urgency = parseInt(document.getElementById('sub-slider-urgency').value)||3;
   s.difficulty = parseInt(document.getElementById('sub-slider-difficulty').value)||3;
   s.impact = parseInt(document.getElementById('sub-slider-impact').value)||3;
-  const minsInp = document.getElementById('sub-mins-input');
-  if(minsInp) s.mins = parseInt(minsInp.value)||null;
-  const dateNative = document.getElementById('sub-date-native-modal');
-  if(dateNative) s.date = dateNative.value||null;
+  s.mins = parseInt(document.getElementById('sub-mins-input').value)||null;
+  s.dueDate = document.getElementById('sub-due-date').value||null;
+  s.scheduledDate = document.getElementById('sub-scheduled-date').value||null;
+  s.scheduledEndDate = document.getElementById('sub-end-date').value||null;
+  s.date = s.scheduledDate; // legacy
   closeModal('modal-subtask-priority');
   editingSubIdx = null;
   renderModalSubtasks();
@@ -2194,7 +2427,7 @@ function getDayLoad(dateStr){
   let total = 0;
   DB.tasks.filter(t=>t.status!=='DONE').forEach(t=>{
     const subMins = (t.subtasks||[])
-      .filter(s=>!s.done && s.date===dateStr && s.mins)
+      .filter(s=>!s.done && (s.scheduledDate||s.date)===dateStr && s.mins)
       .reduce((sum,s)=>sum+(s.mins||0),0);
     if(subMins>0){
       total += subMins;
@@ -2229,23 +2462,50 @@ function checkDateCapacity(dateStr, mins, excludeSubtaskId){
 function getSubtasksForDay(dateStr, includeOverdue){
   const result = [];
   DB.tasks.forEach(t=>{
-    const parentScore = calcScore(t);
     (t.subtasks||[]).forEach(s=>{
       if(s.done) return;
-      const isToday = s.date===dateStr;
-      const isOverdue = includeOverdue && s.date && s.date<dateStr;
-      if(isToday || isOverdue){
+      // scheduledDate = day to work on it; date = legacy fallback
+      const scheduled = s.scheduledDate || s.date;
+      const scheduledEnd = s.scheduledEndDate || scheduled;
+      // Multi-day: show on any day in the range
+      const isScheduled = scheduled && dateStr>=scheduled && dateStr<=(scheduledEnd||scheduled);
+      const isOverdue = includeOverdue && scheduled && scheduled<dateStr && (!scheduledEnd || scheduledEnd<dateStr);
+      if(isScheduled || isOverdue){
         const subScore = calcSubScore(s, t);
-        result.push({...s, taskId:t.id, taskTitle:t.title, taskProject:DB.projects.find(p=>p.id===t.projectId), isOverdue: s.date<dateStr, subScore});
+        const dueDateWarning = s.dueDate && dateStr>s.dueDate;
+        result.push({...s,
+          taskId:t.id, taskTitle:t.title,
+          taskProject:DB.projects.find(p=>p.id===t.projectId),
+          isOverdue: !!isOverdue,
+          dueDateWarning,
+          subScore,
+          scheduledDate: scheduled
+        });
       }
     });
   });
   return result.sort((a,b)=>{
-    // Overdue first, then by subScore desc
     if(a.isOverdue && !b.isOverdue) return -1;
     if(!a.isOverdue && b.isOverdue) return 1;
     return (b.subScore||0)-(a.subScore||0);
   });
+}
+
+// Subtasks with no scheduledDate, sorted by score — for planning view
+function getUnscheduledSubtasks(){
+  const result=[];
+  DB.tasks.forEach(t=>{
+    (t.subtasks||[]).forEach(s=>{
+      if(s.done) return;
+      const scheduled = s.scheduledDate||s.date;
+      if(!scheduled){
+        const subScore = calcSubScore(s,t);
+        const proj = DB.projects.find(p=>p.id===t.projectId);
+        result.push({...s, taskId:t.id, taskTitle:t.title, taskProject:proj, subScore});
+      }
+    });
+  });
+  return result.sort((a,b)=>(b.subScore||0)-(a.subScore||0));
 }
 
 function getDayCapacityMins(jsDay){ // jsDay: 0=Sun..6=Sat → convert to Mon=0
@@ -2493,6 +2753,164 @@ function confettiBurst(){
   }
 }
 
+// ===================== PLAN WEEK =====================
+let planDragSubId = null;
+let planDragTaskId = null;
+
+function initPlanWeek(){
+  renderPlanWeek();
+}
+
+function renderPlanWeek(){
+  renderPlanBacklog();
+  renderPlanWeekCols();
+}
+
+function renderPlanBacklog(){
+  const el = document.getElementById('plan-backlog');
+  if(!el) return;
+  const unscheduled = getUnscheduledSubtasks();
+  if(!unscheduled.length){
+    el.innerHTML=`<div style="text-align:center;padding:16px;color:var(--text-dim);font-size:0.7rem;line-height:1.4;">¡Todo<br>programado! 🎉</div>`;
+    return;
+  }
+  el.innerHTML = unscheduled.map(s=>{
+    const scoreColor = s.subScore>=70?'#0a8a4f':s.subScore>=40?'#b07800':'#c8002a';
+    const proj = s.taskProject;
+    return `<div class="plan-sub-card"
+      draggable="true"
+      ondragstart="onPlanDragStart(event,'${s.id}','${s.taskId}')"
+      ondragend="onPlanDragEnd(event)">
+      <div style="font-weight:700;font-size:0.72rem;line-height:1.3;margin-bottom:4px;">${s.title}</div>
+      <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+        <span style="font-size:0.55rem;font-weight:900;background:${scoreColor}22;color:${scoreColor};padding:1px 5px;border-radius:10px;border:1px solid ${scoreColor}44;">${s.subScore}pts</span>
+        ${s.mins?`<span style="font-size:0.55rem;color:var(--text-muted);font-weight:700;">⏱${s.mins}m</span>`:''}
+        ${s.dueDate?`<span style="font-size:0.55rem;font-weight:800;background:rgba(200,0,42,0.1);color:var(--red);padding:1px 5px;border-radius:8px;">🚨 límite ${formatDate(s.dueDate)}</span>`:''}
+      </div>
+      ${proj?`<div style="font-size:0.55rem;color:var(--text-dim);margin-top:3px;border-left:2px solid ${proj.color||'#888'};padding-left:4px;">${proj.name}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function renderPlanWeekCols(){
+  const el = document.getElementById('plan-week-cols');
+  if(!el) return;
+  const today = new Date();
+  const todayStr = today.toISOString().split('T')[0];
+  const dow = today.getDay();
+  const diff = dow===0?-6:1-dow;
+  const monday = new Date(today);
+  monday.setDate(today.getDate()+diff);
+
+  const DAY_S = ['Lu','Ma','Mi','Ju','Vi','Sá','Do'];
+  let html='';
+  for(let i=0;i<7;i++){
+    const d = new Date(monday);
+    d.setDate(monday.getDate()+i);
+    const ds = d.toISOString().split('T')[0];
+    const isToday = ds===todayStr;
+    const cap = getDayCapacityMins(d.getDay());
+    const load = getDayLoad(ds);
+    const pct = cap>0?Math.min(Math.round(load/cap*100),100):0;
+    const barColor = pct>=100?'var(--red)':pct>=80?'var(--yellow)':'var(--green)';
+    const subs = getSubtasksForDay(ds, false);
+
+    html+=`<div class="plan-day-col ${isToday?'today-plan':''}"
+      ondragover="onPlanDragOver(event,this)"
+      ondragleave="onPlanDragLeave(this)"
+      ondrop="onPlanDrop(event,'${ds}',this)">
+      <div class="plan-day-header">
+        <div style="font-size:0.65rem;font-weight:900;${isToday?'color:var(--accent);':''}">${DAY_S[i]}</div>
+        <div style="font-size:0.8rem;font-weight:900;">${d.getDate()}</div>
+        ${cap>0?`<div class="plan-cap-bar"><div class="plan-cap-fill" style="width:${pct}%;background:${barColor};"></div></div>
+        <div style="font-size:0.5rem;font-weight:700;color:${barColor};margin-top:2px;">${load}/${cap}m</div>`:''}
+      </div>
+      <div class="plan-day-body">
+        ${subs.map(s=>{
+          const proj=s.taskProject;
+          const scoreColor=s.subScore>=70?'#0a8a4f':s.subScore>=40?'#b07800':'#c8002a';
+          return `<div class="plan-sub-card"
+            draggable="true"
+            ondragstart="onPlanDragStart(event,'${s.id}','${s.taskId}')"
+            ondragend="onPlanDragEnd(event)"
+            style="border-left:3px solid ${proj?.color||'#888'};">
+            <div style="font-weight:700;font-size:0.68rem;line-height:1.3;">${s.title}</div>
+            <div style="display:flex;gap:3px;margin-top:3px;flex-wrap:wrap;">
+              <span style="font-size:0.5rem;font-weight:900;color:${scoreColor};">${s.subScore}pts</span>
+              ${s.mins?`<span style="font-size:0.5rem;color:var(--text-muted);">⏱${s.mins}m</span>`:''}
+            </div>
+            <button onclick="unscheduleSubtask('${s.taskId}','${s.id}')"
+              style="background:none;border:none;font-size:0.6rem;color:var(--text-dim);cursor:pointer;margin-top:2px;padding:0;">✕ quitar</button>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }
+  el.innerHTML = html;
+}
+
+function onPlanDragStart(e, subId, taskId){
+  planDragSubId = subId;
+  planDragTaskId = taskId;
+  e.dataTransfer.effectAllowed = 'move';
+  setTimeout(()=>e.target.classList.add('dragging'),0);
+}
+
+function onPlanDragEnd(e){
+  e.target.classList.remove('dragging');
+  document.querySelectorAll('.plan-day-col').forEach(c=>c.classList.remove('drag-over'));
+}
+
+function onPlanDragOver(e, col){
+  e.preventDefault();
+  e.dataTransfer.dropEffect='move';
+  document.querySelectorAll('.plan-day-col').forEach(c=>c.classList.remove('drag-over'));
+  col.classList.add('drag-over');
+}
+
+function onPlanDragLeave(col){
+  col.classList.remove('drag-over');
+}
+
+function onPlanDrop(e, dateStr, col){
+  e.preventDefault();
+  col.classList.remove('drag-over');
+  if(!planDragSubId) return;
+  scheduleSubtask(planDragTaskId, planDragSubId, dateStr);
+  planDragSubId=null; planDragTaskId=null;
+}
+
+function dropOnBacklog(e){
+  e.preventDefault();
+  if(!planDragSubId) return;
+  unscheduleSubtask(planDragTaskId, planDragSubId);
+  planDragSubId=null; planDragTaskId=null;
+}
+
+function scheduleSubtask(taskId, subId, dateStr){
+  const task = DB.tasks.find(t=>t.id===taskId);
+  if(!task) return;
+  const sub = (task.subtasks||[]).find(s=>s.id===subId);
+  if(!sub) return;
+  sub.scheduledDate = dateStr;
+  sub.date = dateStr; // legacy
+  saveDB();
+  renderPlanWeek();
+  renderDashboard();
+}
+
+function unscheduleSubtask(taskId, subId){
+  const task = DB.tasks.find(t=>t.id===taskId);
+  if(!task) return;
+  const sub = (task.subtasks||[]).find(s=>s.id===subId);
+  if(!sub) return;
+  sub.scheduledDate = null;
+  sub.date = null;
+  saveDB();
+  renderPlanWeek();
+  renderDashboard();
+}
+
 // ===================== CALENDAR =====================
 let calView = 'week'; // 'week' | 'month'
 let calCurrentMonday = null; // ISO date of Monday shown
@@ -2551,7 +2969,8 @@ function getSubtasksForCalDay(dateStr){
   DB.tasks.forEach(t=>{
     const proj=DB.projects.find(p=>p.id===t.projectId);
     (t.subtasks||[]).forEach(s=>{
-      if(s.date===dateStr&&!s.done)
+      const scheduled=s.scheduledDate||s.date;
+      if(scheduled===dateStr&&!s.done)
         result.push({...s,taskTitle:t.title,projColor:proj?.color||'#888',taskId:t.id});
     });
   });
@@ -2804,8 +3223,6 @@ function openAddBlockModal(ds, time){
   const dateToUse=ds||calSelectedDay||new Date().toISOString().split('T')[0];
   document.getElementById('block-date').value=dateToUse;
   document.getElementById('block-date-native').value=dateToUse;
-  const dtxt=document.getElementById('block-date-display-text');
-  dtxt.textContent=formatDate(dateToUse); dtxt.style.color='var(--text)';
   calBlockDateValue=dateToUse;
   // Populate subtask select
   populateBlockSubtaskSelect('');
@@ -2824,8 +3241,6 @@ function openEditBlock(id, e){
   document.getElementById('block-end').value=b.end||'10:00';
   document.getElementById('block-date').value=b.date;
   document.getElementById('block-date-native').value=b.date;
-  const dtxt=document.getElementById('block-date-display-text');
-  dtxt.textContent=formatDate(b.date); dtxt.style.color='var(--text)';
   calBlockDateValue=b.date;
   document.getElementById('btn-delete-block').style.display='flex';
   populateBlockSubtaskSelect(b.subtaskId||'');
@@ -2856,11 +3271,8 @@ function populateBlockSubtaskSelect(selectedId){
 }
 
 function onBlockDateChange(isoVal){
-  document.getElementById('block-date').value=isoVal;
-  const dtxt=document.getElementById('block-date-display-text');
-  dtxt.textContent=isoVal?formatDate(isoVal):'Seleccionar fecha';
-  dtxt.style.color=isoVal?'var(--text)':'var(--text-dim)';
-  calBlockDateValue=isoVal;
+  document.getElementById('block-date').value=isoVal||'';
+  calBlockDateValue=isoVal||'';
 }
 
 function selectBlockColor(color, btn){
