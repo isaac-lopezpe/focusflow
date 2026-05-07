@@ -615,6 +615,12 @@ function saveDB(){
   localStorage.setItem(STORAGE_KEY, JSON.stringify(DB));
 }
 
+function formatDate(dateStr){
+  if(!dateStr) return '';
+  const [y,m,d] = dateStr.split('-');
+  return `${d}/${m}/${y}`;
+}
+
 function uid(){
   return Date.now().toString(36) + Math.random().toString(36).slice(2);
 }
@@ -801,6 +807,7 @@ function checkAndShowOverloadWarning(){
   const barColor = info.pct>=100?'var(--red)':info.pct>=80?'var(--yellow)':'var(--green)';
   const d = new Date(dateStr+'T12:00:00');
   const dayName = DAY_NAMES[d.getDay()===0?6:d.getDay()-1];
+  const dateDisplay = formatDate(dateStr);
   let html = `<div style="background:var(--surface);border:1.5px solid ${info.overloaded?'var(--red)':info.pct>=80?'var(--yellow)':'var(--border)'};border-radius:var(--radius-sm);padding:12px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
       <span style="font-weight:800;font-size:0.8rem;color:${barColor};">
@@ -1083,7 +1090,7 @@ function taskCardHTML(t, proj){
       <div class="task-meta">
         ${proj?`<span class="task-project" style="color:${proj.color};border-color:${proj.color}44;">${proj.emoji} ${proj.name}</span>`:''}
         <span class="pill ${timePill}">${timeLabel}</span>
-        ${t.due?`<span style="font-size:0.6rem;color:var(--text-dim);">📅 ${t.due}</span>`:''}
+        ${t.due?`<span style="font-size:0.6rem;color:var(--text-dim);">📅 ${formatDate(t.due)}</span>`:''}
       </div>
       ${subtaskTotal?`<div class="task-subtasks">📋 ${subtaskDone}/${subtaskTotal} subtareas</div>`:''}
     </div>
@@ -1190,7 +1197,7 @@ function renderWeekLoad(){
     html += `<div style="margin-bottom:10px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
         <span style="font-size:0.75rem;font-weight:${isToday?'900':'700'};color:${isToday?'var(--accent)':'var(--text)'};">
-          ${DAY_NAMES[i]} ${isToday?'← HOY':''} ${isNight?'🌙':''}
+          ${DAY_NAMES[i]} ${ds?formatDate(ds):''} ${isToday?'← HOY':''} ${isNight?'🌙':''}
         </span>
         <span style="font-size:0.7rem;font-weight:800;color:${barColor};">${load}/${cap}min ${tasks.length?'('+tasks.length+' tareas)':''}</span>
       </div>
