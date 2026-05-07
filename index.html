@@ -293,6 +293,30 @@ input[type=range]::-webkit-slider-thumb{
 .agenda-task-ref{font-size:0.62rem;color:var(--text-muted);font-weight:600;}
 .agenda-overdue-badge{font-size:0.6rem;font-weight:800;color:var(--red);background:rgba(200,0,42,0.1);border:1px solid rgba(200,0,42,0.3);padding:2px 7px;border-radius:20px;}
 
+/* CALENDAR */
+.cal-week-grid{display:grid;grid-template-columns:36px repeat(7,1fr);border:2px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.cal-day-header{background:var(--surface);border-bottom:2px solid var(--border);padding:6px 2px;text-align:center;border-right:1px solid var(--border);}
+.cal-day-header.today-col{background:rgba(79,63,240,0.1);}
+.cal-day-name{font-size:0.55rem;font-weight:900;text-transform:uppercase;color:var(--text-muted);}
+.cal-day-num{font-size:0.85rem;font-weight:900;}
+.cal-day-num.today-num{color:var(--accent);}
+.cal-hour-label{font-size:0.5rem;font-weight:700;color:var(--text-dim);padding:0 3px;text-align:right;border-right:1px solid var(--border);display:flex;align-items:flex-start;padding-top:2px;}
+.cal-cell{border-right:1px solid var(--border);border-bottom:1px solid var(--border);min-height:32px;position:relative;cursor:pointer;transition:background 0.1s;}
+.cal-cell:hover{background:rgba(79,63,240,0.05);}
+.cal-cell.today-col{background:rgba(79,63,240,0.03);}
+.cal-block{position:absolute;left:1px;right:1px;border-radius:4px;padding:2px 4px;font-size:0.55rem;font-weight:800;overflow:hidden;cursor:pointer;z-index:2;line-height:1.2;}
+.cal-subtask-dot{position:absolute;left:1px;right:1px;border-radius:3px;padding:1px 3px;font-size:0.5rem;font-weight:700;overflow:hidden;cursor:pointer;z-index:2;opacity:0.85;}
+
+/* MONTH GRID */
+.cal-month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
+.cal-month-day{min-height:64px;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:4px;cursor:pointer;transition:background 0.15s;}
+.cal-month-day:hover{background:var(--surface);}
+.cal-month-day.today-day{border-color:var(--accent);border-width:2px;}
+.cal-month-day.other-month{opacity:0.4;}
+.cal-month-day.selected-day{background:rgba(79,63,240,0.1);}
+.cal-month-num{font-size:0.7rem;font-weight:900;margin-bottom:3px;}
+.cal-month-dot{height:5px;border-radius:3px;margin-bottom:2px;font-size:0.45rem;padding:0 3px;font-weight:800;color:#fff;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+
 /* CONFETTI */
 @keyframes confetti-fall{0%{transform:translateY(-10px) rotate(0deg);opacity:1;}100%{transform:translateY(80px) rotate(720deg);opacity:0;}}
 .confetti-dot{position:fixed;width:6px;height:6px;border-radius:50%;pointer-events:none;animation:confetti-fall 0.6s ease-out forwards;z-index:9999;}
@@ -456,6 +480,46 @@ input[type=range]::-webkit-slider-thumb{
       <div id="agenda-list"></div>
     </div>
 
+    <!-- CALENDAR VIEW -->
+    <div class="view" id="view-calendar" style="padding:12px 12px 0;">
+
+      <!-- HEADER -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <button class="back-btn" onclick="calChangeWeek(-1)" id="cal-prev">←</button>
+        <div style="text-align:center;flex:1;">
+          <div style="font-weight:900;font-size:0.95rem;" id="cal-header-title"></div>
+          <button onclick="calGoToday()" style="font-size:0.6rem;font-weight:800;color:var(--accent);background:none;border:none;cursor:pointer;text-transform:uppercase;letter-spacing:0.5px;">Hoy</button>
+        </div>
+        <button class="back-btn" onclick="calChangeWeek(1)" id="cal-next">→</button>
+      </div>
+
+      <!-- VIEW TOGGLE -->
+      <div style="display:flex;gap:4px;margin-bottom:12px;background:var(--bg);padding:4px;border-radius:var(--radius-sm);border:1.5px solid var(--border);">
+        <button id="cal-toggle-week" onclick="setCalView('week',this)"
+          style="flex:1;height:30px;border:none;border-radius:8px;font-family:'Nunito',sans-serif;font-size:0.72rem;font-weight:800;cursor:pointer;background:var(--border);color:#fff;">
+          📅 Semana
+        </button>
+        <button id="cal-toggle-month" onclick="setCalView('month',this)"
+          style="flex:1;height:30px;border:none;border-radius:8px;font-family:'Nunito',sans-serif;font-size:0.72rem;font-weight:800;cursor:pointer;background:transparent;color:var(--text-muted);">
+          🗓 Mes
+        </button>
+      </div>
+
+      <!-- CALENDAR BODY -->
+      <div id="cal-body"></div>
+
+      <!-- DAY DETAIL PANEL (slides up when day tapped) -->
+      <div id="cal-day-panel" style="display:none;margin-top:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div style="font-weight:900;font-size:0.95rem;" id="cal-day-panel-title"></div>
+          <button onclick="closeDayPanel()" style="background:none;border:none;font-size:1rem;cursor:pointer;color:var(--text-muted);">✕</button>
+        </div>
+        <div id="cal-day-panel-content"></div>
+        <button class="btn btn-secondary btn-sm" style="margin-top:8px;"
+          onclick="openAddBlockModal()">＋ Agregar bloque de tiempo</button>
+      </div>
+    </div>
+
     <!-- SETTINGS -->
     <div class="view" id="view-settings">
       <div class="settings-section">
@@ -489,6 +553,110 @@ input[type=range]::-webkit-slider-thumb{
     </div>
   </div>
 
+  <!-- POMODORO FAB -->
+  <button id="pomo-fab" onclick="togglePomoPanel()"
+    style="position:fixed;right:16px;bottom:80px;z-index:300;
+      width:52px;height:52px;border-radius:50%;border:2.5px solid var(--border);
+      background:var(--card);cursor:pointer;font-size:1.3rem;
+      box-shadow:3px 3px 0 var(--border);
+      display:flex;align-items:center;justify-content:center;
+      transition:all 0.2s;user-select:none;">
+    🍅
+  </button>
+
+  <!-- POMODORO PANEL -->
+  <div id="pomo-panel"
+    style="position:fixed;right:16px;bottom:144px;z-index:400;
+      width:300px;background:var(--card);border:2.5px solid var(--border);
+      border-radius:var(--radius);padding:16px;
+      box-shadow:4px 4px 0 var(--border);
+      display:none;animation:slideUp 0.25s ease;">
+
+    <!-- HEADER -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <span style="font-family:'Nunito',sans-serif;font-weight:900;font-size:0.95rem;">🍅 Pomodoro</span>
+      <button onclick="togglePomoPanel()" style="background:none;border:none;cursor:pointer;font-size:1rem;color:var(--text-muted);">✕</button>
+    </div>
+
+    <!-- MODE TABS -->
+    <div style="display:flex;gap:4px;margin-bottom:14px;background:var(--bg);padding:4px;border-radius:var(--radius-sm);border:1.5px solid var(--border);">
+      <button class="pomo-mode-btn active" data-mode="work" onclick="setPomoMode('work',this)" style="flex:1;height:30px;border:none;border-radius:8px;font-family:'Nunito',sans-serif;font-size:0.68rem;font-weight:800;cursor:pointer;background:var(--border);color:#fff;">🎯 Trabajo</button>
+      <button class="pomo-mode-btn" data-mode="short" onclick="setPomoMode('short',this)" style="flex:1;height:30px;border:none;border-radius:8px;font-family:'Nunito',sans-serif;font-size:0.68rem;font-weight:800;cursor:pointer;background:transparent;color:var(--text-muted);">☕ Corto</button>
+      <button class="pomo-mode-btn" data-mode="long" onclick="setPomoMode('long',this)" style="flex:1;height:30px;border:none;border-radius:8px;font-family:'Nunito',sans-serif;font-size:0.68rem;font-weight:800;cursor:pointer;background:transparent;color:var(--text-muted);">🌿 Largo</button>
+    </div>
+
+    <!-- TIMER RING -->
+    <div style="position:relative;width:140px;height:140px;margin:0 auto 14px;">
+      <svg width="140" height="140" style="transform:rotate(-90deg);">
+        <circle cx="70" cy="70" r="60" fill="none" stroke="var(--bg)" stroke-width="8" style="stroke:var(--border);opacity:0.2;"/>
+        <circle id="pomo-ring" cx="70" cy="70" r="60" fill="none" stroke="var(--border)" stroke-width="8"
+          stroke-dasharray="377" stroke-dashoffset="0"
+          style="transition:stroke-dashoffset 1s linear;stroke-linecap:round;"/>
+      </svg>
+      <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+        <div id="pomo-time" style="font-family:'Nunito',sans-serif;font-size:2rem;font-weight:900;line-height:1;">25:00</div>
+        <div id="pomo-mode-label" style="font-size:0.6rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px;">Trabajo</div>
+      </div>
+    </div>
+
+    <!-- ACTIVE SUBTASK -->
+    <div style="margin-bottom:12px;">
+      <div style="font-size:0.6rem;font-weight:900;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;">Trabajando en</div>
+      <select id="pomo-subtask-select" class="select" style="height:38px;font-size:0.78rem;font-weight:700;">
+        <option value="">— Selecciona subtarea —</option>
+      </select>
+      <div id="pomo-subtask-info" style="margin-top:5px;font-size:0.65rem;color:var(--text-muted);"></div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <button id="pomo-start-btn" onclick="togglePomoTimer()"
+        style="flex:1;height:42px;background:var(--border);color:#fff;border:none;
+          border-radius:var(--radius-sm);font-family:'Nunito',sans-serif;
+          font-weight:900;font-size:0.85rem;cursor:pointer;">
+        ▶ Iniciar
+      </button>
+      <button onclick="resetPomoTimer()"
+        style="width:42px;height:42px;background:var(--bg);color:var(--text-muted);
+          border:2px solid var(--border);border-radius:var(--radius-sm);
+          font-size:0.9rem;cursor:pointer;">↺</button>
+    </div>
+
+    <!-- SESSION COUNT -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <span style="font-size:0.65rem;font-weight:700;color:var(--text-muted);">Sesiones hoy</span>
+      <div id="pomo-sessions-dots" style="display:flex;gap:3px;"></div>
+    </div>
+
+    <!-- REAL TIME vs ESTIMATE -->
+    <div id="pomo-comparison" style="display:none;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px;">
+      <div style="font-size:0.6rem;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:6px;">Tiempo real vs estimado</div>
+      <div id="pomo-comparison-body"></div>
+    </div>
+
+    <!-- CONFIG LINK -->
+    <button onclick="togglePomoConfig()" style="width:100%;margin-top:10px;background:none;border:none;font-size:0.65rem;font-weight:700;color:var(--text-muted);cursor:pointer;text-align:center;">⚙️ Configurar duraciones</button>
+    <div id="pomo-config" style="display:none;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+        <div>
+          <label style="font-size:0.6rem;font-weight:800;color:var(--text-muted);display:block;margin-bottom:3px;">🎯 TRABAJO</label>
+          <input type="number" id="cfg-work" value="25" min="1" max="90"
+            onchange="savePomoConfig()" style="width:100%;height:34px;text-align:center;border:2px solid var(--border);border-radius:6px;font-family:'Nunito',sans-serif;font-weight:900;font-size:0.9rem;background:var(--bg);color:var(--text);">
+        </div>
+        <div>
+          <label style="font-size:0.6rem;font-weight:800;color:var(--text-muted);display:block;margin-bottom:3px;">☕ CORTO</label>
+          <input type="number" id="cfg-short" value="5" min="1" max="30"
+            onchange="savePomoConfig()" style="width:100%;height:34px;text-align:center;border:2px solid var(--border);border-radius:6px;font-family:'Nunito',sans-serif;font-weight:900;font-size:0.9rem;background:var(--bg);color:var(--text);">
+        </div>
+        <div>
+          <label style="font-size:0.6rem;font-weight:800;color:var(--text-muted);display:block;margin-bottom:3px;">🌿 LARGO</label>
+          <input type="number" id="cfg-long" value="15" min="1" max="60"
+            onchange="savePomoConfig()" style="width:100%;height:34px;text-align:center;border:2px solid var(--border);border-radius:6px;font-family:'Nunito',sans-serif;font-weight:900;font-size:0.9rem;background:var(--bg);color:var(--text);">
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- BOTTOM NAV -->
   <nav class="nav" id="main-nav">
     <button class="nav-btn active" onclick="switchView('dash',this)">
@@ -503,8 +671,8 @@ input[type=range]::-webkit-slider-thumb{
     <button class="nav-btn" onclick="switchView('agenda',this);initAgendaView()">
       <span class="nav-icon">📋</span><span class="nav-label">Agenda</span>
     </button>
-    <button class="nav-btn" onclick="switchView('matrix',this)">
-      <span class="nav-icon">🔥</span><span class="nav-label">Matriz</span>
+    <button class="nav-btn" onclick="switchView('calendar',this);initCalendar()">
+      <span class="nav-icon">📅</span><span class="nav-label">Calendar</span>
     </button>
     <button class="nav-btn" onclick="switchView('settings',this)">
       <span class="nav-icon">⚙️</span><span class="nav-label">Config</span>
@@ -665,6 +833,64 @@ input[type=range]::-webkit-slider-thumb{
     <input type="hidden" id="sub-editing-task-id">
     <input type="hidden" id="sub-editing-subtask-id">
     <button class="btn btn-primary" onclick="saveSubtaskPriority()" style="margin-top:12px;">GUARDAR PRIORIDAD</button>
+  </div>
+</div>
+
+<!-- MODAL: ADD TIME BLOCK -->
+<div class="modal-overlay" id="modal-add-block">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">
+      <span id="block-modal-title">Bloquear Tiempo</span>
+      <button class="btn-icon-sm" onclick="closeModal('modal-add-block')">✕</button>
+    </div>
+    <input type="hidden" id="editing-block-id">
+    <div class="field">
+      <label class="field-label">Título del bloque</label>
+      <input type="text" class="input" id="block-title" placeholder="Ej: Trabajo profundo, Reunión, Gym...">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;" class="field">
+      <div>
+        <label class="field-label">Hora inicio</label>
+        <input type="time" class="input" id="block-start" value="09:00">
+      </div>
+      <div>
+        <label class="field-label">Hora fin</label>
+        <input type="time" class="input" id="block-end" value="10:00">
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">📅 Fecha</label>
+      <div style="position:relative;">
+        <input type="date" id="block-date-native"
+          style="position:absolute;opacity:0;width:100%;height:100%;top:0;left:0;cursor:pointer;z-index:2;"
+          onchange="onBlockDateChange(this.value)">
+        <div class="input" id="block-date-display"
+          onclick="document.getElementById('block-date-native').showPicker?document.getElementById('block-date-native').showPicker():document.getElementById('block-date-native').click()"
+          style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none;">
+          <span id="block-date-display-text" style="color:var(--text-dim);">Seleccionar fecha</span>
+          <span>📅</span>
+        </div>
+        <input type="hidden" id="block-date">
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">Color</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;" id="block-color-picker">
+        <button onclick="selectBlockColor('#4f3ff0',this)" style="width:28px;height:28px;border-radius:50%;background:#4f3ff0;border:3px solid var(--border);cursor:pointer;" class="color-dot active-color"></button>
+        <button onclick="selectBlockColor('#0a8a4f',this)" style="width:28px;height:28px;border-radius:50%;background:#0a8a4f;border:3px solid transparent;cursor:pointer;" class="color-dot"></button>
+        <button onclick="selectBlockColor('#c8002a',this)" style="width:28px;height:28px;border-radius:50%;background:#c8002a;border:3px solid transparent;cursor:pointer;" class="color-dot"></button>
+        <button onclick="selectBlockColor('#b07800',this)" style="width:28px;height:28px;border-radius:50%;background:#b07800;border:3px solid transparent;cursor:pointer;" class="color-dot"></button>
+        <button onclick="selectBlockColor('#555555',this)" style="width:28px;height:28px;border-radius:50%;background:#555555;border:3px solid transparent;cursor:pointer;" class="color-dot"></button>
+      </div>
+      <input type="hidden" id="block-color" value="#4f3ff0">
+    </div>
+    <div class="field">
+      <label class="field-label">Subtarea vinculada (opcional)</label>
+      <select class="select" id="block-subtask"></select>
+    </div>
+    <button class="btn btn-primary" onclick="saveTimeBlock()">GUARDAR BLOQUE</button>
+    <button class="btn btn-danger btn-sm" id="btn-delete-block" style="margin-top:8px;display:none;" onclick="deleteCurrentBlock()">🗑️ Eliminar bloque</button>
   </div>
 </div>
 
@@ -1694,7 +1920,8 @@ function agendaItemHTML(s, viewDateStr){
     <div class="agenda-item-body">
       <div class="agenda-item-title ${s.done?'done':''}">${s.title}</div>
       <div class="agenda-item-meta">
-        ${s.mins?`<span class="agenda-mins">⏱ ${s.mins}min</span>`:''}
+        ${s.mins?`<span class="agenda-mins">⏱ ${s.mins}min est.</span>`:''}
+        ${s.trackedSecs>0?`<span style="font-size:0.6rem;font-weight:800;background:rgba(79,63,240,0.1);color:var(--accent);padding:2px 7px;border-radius:20px;border:1px solid rgba(79,63,240,0.2);">⏺ ${Math.round(s.trackedSecs/60)}min real</span>`:''}
         ${score?`<span style="font-size:0.6rem;font-weight:900;background:${scoreColor}22;color:${scoreColor};padding:2px 7px;border-radius:20px;">${score}pts</span>`:''}
         <span class="agenda-task-ref" style="border-left:3px solid ${projColor};padding-left:6px;">
           ${proj?proj.emoji+' ':''} ${s.taskTitle}
@@ -2266,11 +2493,706 @@ function confettiBurst(){
   }
 }
 
+// ===================== CALENDAR =====================
+let calView = 'week'; // 'week' | 'month'
+let calCurrentMonday = null; // ISO date of Monday shown
+let calSelectedDay = null;
+let calSelectedBlockColor = '#4f3ff0';
+let calBlockDateValue = '';
+
+const CAL_HOURS = Array.from({length:16},(_,i)=>i+7); // 7am–10pm
+const DAY_SHORT_CAL = ['Lu','Ma','Mi','Ju','Vi','Sá','Do'];
+const MONTH_NAMES_CAL = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+function initCalendar(){
+  const today = new Date();
+  const dow = today.getDay();
+  const diff = dow===0?-6:1-dow;
+  const mon = new Date(today);
+  mon.setDate(today.getDate()+diff);
+  calCurrentMonday = mon.toISOString().split('T')[0];
+  calSelectedDay = today.toISOString().split('T')[0];
+  renderCalendar();
+}
+
+function setCalView(view, btn){
+  calView = view;
+  document.querySelectorAll('#cal-toggle-week,#cal-toggle-month').forEach(b=>{
+    b.style.background='transparent'; b.style.color='var(--text-muted)';
+  });
+  btn.style.background='var(--border)'; btn.style.color='#fff';
+  renderCalendar();
+}
+
+function calChangeWeek(delta){
+  const d = new Date(calCurrentMonday+'T12:00:00');
+  d.setDate(d.getDate()+(calView==='week'?7*delta:32*delta));
+  if(calView==='month'){ d.setDate(1); }
+  calCurrentMonday = d.toISOString().split('T')[0];
+  renderCalendar();
+}
+
+function calGoToday(){
+  initCalendar();
+  closeDayPanel();
+}
+
+function renderCalendar(){
+  if(calView==='week') renderWeekView();
+  else renderMonthView();
+}
+
+function getBlocksForDay(dateStr){
+  return (DB.timeBlocks||[]).filter(b=>b.date===dateStr);
+}
+
+function getSubtasksForCalDay(dateStr){
+  const result=[];
+  DB.tasks.forEach(t=>{
+    const proj=DB.projects.find(p=>p.id===t.projectId);
+    (t.subtasks||[]).forEach(s=>{
+      if(s.date===dateStr&&!s.done)
+        result.push({...s,taskTitle:t.title,projColor:proj?.color||'#888',taskId:t.id});
+    });
+  });
+  return result;
+}
+
+// ── WEEK VIEW ─────────────────────────────────────────────
+function renderWeekView(){
+  const mon = new Date(calCurrentMonday+'T12:00:00');
+  const days=[];
+  for(let i=0;i<7;i++){
+    const d=new Date(mon); d.setDate(mon.getDate()+i);
+    days.push(d);
+  }
+  const todayStr=new Date().toISOString().split('T')[0];
+
+  // Header title
+  const endDay=days[6];
+  document.getElementById('cal-header-title').textContent=
+    `${days[0].getDate()} ${MONTH_NAMES_CAL[days[0].getMonth()]} — ${endDay.getDate()} ${MONTH_NAMES_CAL[endDay.getMonth()]} ${endDay.getFullYear()}`;
+
+  let html=`<div class="cal-week-grid">`;
+  // Corner
+  html+=`<div class="cal-day-header" style="border-right:2px solid var(--border);"></div>`;
+  // Day headers
+  days.forEach((d,i)=>{
+    const ds=d.toISOString().split('T')[0];
+    const isToday=ds===todayStr;
+    const isSel=ds===calSelectedDay;
+    html+=`<div class="cal-day-header ${isToday?'today-col':''}" style="cursor:pointer;${isSel?'background:rgba(79,63,240,0.15);':''}"
+      onclick="calSelectDay('${ds}')">
+      <div class="cal-day-name" style="${isToday?'color:var(--accent);':''}">${DAY_SHORT_CAL[i]}</div>
+      <div class="cal-day-num ${isToday?'today-num':''}" style="${isSel?'color:var(--accent);':''}">${d.getDate()}</div>
+    </div>`;
+  });
+
+  // Hour rows
+  CAL_HOURS.forEach(h=>{
+    const hLabel=h<12?`${h}am`:h===12?'12pm':`${h-12}pm`;
+    html+=`<div class="cal-hour-label">${hLabel}</div>`;
+    days.forEach((d,di)=>{
+      const ds=d.toISOString().split('T')[0];
+      const isToday=ds===todayStr;
+      const isSel=ds===calSelectedDay;
+      // Find blocks that start this hour
+      const blocks=getBlocksForDay(ds).filter(b=>{
+        const bh=parseInt((b.start||'00:00').split(':')[0]);
+        return bh===h;
+      });
+      // Find subtasks (show as dots at top of first hour)
+      const subs=h===CAL_HOURS[0]?getSubtasksForCalDay(ds):[];
+      let cellContent='';
+      blocks.forEach(b=>{
+        const startMin=parseInt((b.start||'00:00').split(':')[1])||0;
+        const endH=parseInt((b.end||'00:00').split(':')[0]);
+        const endMin=parseInt((b.end||'00:00').split(':')[1])||0;
+        const durMins=(endH*60+endMin)-(h*60+startMin);
+        const heightPx=Math.max(20,durMins/60*32);
+        const topPx=startMin/60*32;
+        cellContent+=`<div class="cal-block" title="${b.title}"
+          style="background:${b.color||'#4f3ff0'};color:#fff;top:${topPx}px;height:${heightPx}px;"
+          onclick="openEditBlock('${b.id}',event)">${b.title}</div>`;
+      });
+      subs.forEach((s,si)=>{
+        cellContent+=`<div class="cal-subtask-dot" title="${s.title}"
+          style="background:${s.projColor};color:#fff;top:${si*14}px;"
+          onclick="openEditTask('${s.taskId}')">${s.title}</div>`;
+      });
+      html+=`<div class="cal-cell ${isToday?'today-col':''}"
+        style="${isSel?'background:rgba(79,63,240,0.06);':''}"
+        onclick="calDayClick('${ds}','${String(h).padStart(2,'0')}:00')">
+        ${cellContent}
+      </div>`;
+    });
+  });
+  html+=`</div>`;
+  document.getElementById('cal-body').innerHTML=html;
+
+  // Auto-show day panel for selected day
+  if(calSelectedDay) renderDayPanel(calSelectedDay);
+}
+
+// ── MONTH VIEW ────────────────────────────────────────────
+function renderMonthView(){
+  const ref=new Date(calCurrentMonday+'T12:00:00');
+  const year=ref.getFullYear();
+  const month=ref.getMonth();
+  document.getElementById('cal-header-title').textContent=
+    `${MONTH_NAMES_CAL[month]} ${year}`;
+
+  const firstDay=new Date(year,month,1);
+  const startDow=firstDay.getDay()===0?6:firstDay.getDay()-1; // Mon=0
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  const todayStr=new Date().toISOString().split('T')[0];
+
+  let html=`<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px;">`;
+  DAY_SHORT_CAL.forEach(d=>{ html+=`<div style="text-align:center;font-size:0.6rem;font-weight:900;color:var(--text-muted);padding:4px 0;">${d}</div>`; });
+  html+=`</div><div class="cal-month-grid">`;
+
+  // Prev month padding
+  for(let i=0;i<startDow;i++){
+    const pd=new Date(year,month,0-startDow+i+2);
+    html+=`<div class="cal-month-day other-month"><div class="cal-month-num" style="color:var(--text-dim);">${pd.getDate()}</div></div>`;
+  }
+
+  // Current month days
+  for(let d=1;d<=daysInMonth;d++){
+    const date=new Date(year,month,d);
+    const ds=date.toISOString().split('T')[0];
+    const isToday=ds===todayStr;
+    const isSel=ds===calSelectedDay;
+    const blocks=getBlocksForDay(ds);
+    const subs=getSubtasksForCalDay(ds);
+    const tasksDue=DB.tasks.filter(t=>t.due===ds&&t.status!=='DONE');
+
+    let dotsHtml='';
+    blocks.slice(0,2).forEach(b=>{
+      dotsHtml+=`<div class="cal-month-dot" style="background:${b.color||'#4f3ff0'};">${b.title}</div>`;
+    });
+    subs.slice(0,2).forEach(s=>{
+      dotsHtml+=`<div class="cal-month-dot" style="background:${s.projColor};">${s.title}</div>`;
+    });
+    if(tasksDue.length){
+      dotsHtml+=`<div style="font-size:0.45rem;font-weight:800;color:var(--text-muted);">+${tasksDue.length} tarea${tasksDue.length>1?'s':''}</div>`;
+    }
+
+    html+=`<div class="cal-month-day ${isToday?'today-day':''} ${isSel?'selected-day':''}"
+      onclick="calSelectDay('${ds}')">
+      <div class="cal-month-num" style="${isToday?'color:var(--accent);':''}">${d}</div>
+      ${dotsHtml}
+    </div>`;
+  }
+  html+=`</div>`;
+  document.getElementById('cal-body').innerHTML=html;
+  if(calSelectedDay) renderDayPanel(calSelectedDay);
+}
+
+// ── DAY PANEL ─────────────────────────────────────────────
+function calSelectDay(ds){
+  calSelectedDay=ds;
+  renderCalendar();
+  renderDayPanel(ds);
+}
+
+function calDayClick(ds, time){
+  calSelectedDay=ds;
+  renderCalendar();
+  renderDayPanel(ds);
+}
+
+function renderDayPanel(ds){
+  const panel=document.getElementById('cal-day-panel');
+  const titleEl=document.getElementById('cal-day-panel-title');
+  const contentEl=document.getElementById('cal-day-panel-content');
+  if(!panel||!titleEl||!contentEl) return;
+
+  panel.style.display='block';
+  const d=new Date(ds+'T12:00:00');
+  const DAY_FULL2=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  const todayStr=new Date().toISOString().split('T')[0];
+  titleEl.textContent=`${DAY_FULL2[d.getDay()]} ${d.getDate()} ${MONTH_NAMES_CAL[d.getMonth()]}${ds===todayStr?' · HOY':''}`;
+
+  const blocks=getBlocksForDay(ds).sort((a,b)=>a.start>b.start?1:-1);
+  const subs=getSubtasksForCalDay(ds);
+  const tasksDue=DB.tasks.filter(t=>t.due===ds&&t.status!=='DONE');
+
+  let html='';
+
+  // Capacity bar
+  const cap=getDayCapacityMins(d.getDay());
+  const load=getDayLoad(ds);
+  const pct=cap>0?Math.min(Math.round(load/cap*100),100):0;
+  const barColor=pct>=100?'var(--red)':pct>=80?'var(--yellow)':'var(--green)';
+  if(cap>0){
+    html+=`<div style="margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;font-size:0.65rem;font-weight:700;margin-bottom:4px;">
+        <span style="color:var(--text-muted);">Carga del día</span>
+        <span style="color:${barColor};">${load}/${cap}min</span>
+      </div>
+      <div style="height:6px;background:#d0d0d0;border-radius:3px;overflow:hidden;">
+        <div style="height:100%;width:${pct}%;background:${barColor};border-radius:3px;"></div>
+      </div>
+    </div>`;
+  }
+
+  // Time blocks
+  if(blocks.length){
+    html+=`<div style="font-size:0.6rem;font-weight:900;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">⏰ Bloques de tiempo</div>`;
+    blocks.forEach(b=>{
+      html+=`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--card);border:2px solid var(--border);border-radius:var(--radius-sm);margin-bottom:5px;cursor:pointer;border-left:4px solid ${b.color||'#4f3ff0'};"
+        onclick="openEditBlock('${b.id}',event)">
+        <div style="flex:1;">
+          <div style="font-weight:800;font-size:0.85rem;">${b.title}</div>
+          <div style="font-size:0.65rem;color:var(--text-muted);">${b.start||''}${b.end?' → '+b.end:''}</div>
+        </div>
+        <span style="color:var(--text-dim);font-size:0.8rem;">✏️</span>
+      </div>`;
+    });
+  }
+
+  // Subtasks
+  if(subs.length){
+    html+=`<div style="font-size:0.6rem;font-weight:900;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin:10px 0 6px;">📋 Subtareas</div>`;
+    subs.forEach(s=>{
+      html+=`<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius-sm);margin-bottom:4px;">
+        <button class="agenda-check" onclick="toggleSubtaskDone('${s.taskId}','${s.id}',this)" style="width:20px;height:20px;font-size:0.6rem;">${s.done?'✓':''}</button>
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:700;font-size:0.82rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${s.title}</div>
+          <div style="font-size:0.6rem;color:var(--text-muted);">${s.taskTitle}${s.mins?' · ⏱'+s.mins+'min':''}</div>
+        </div>
+        <div style="width:8px;height:8px;border-radius:50%;background:${s.projColor};flex-shrink:0;"></div>
+      </div>`;
+    });
+  }
+
+  // Tasks with due date
+  if(tasksDue.length){
+    html+=`<div style="font-size:0.6rem;font-weight:900;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin:10px 0 6px;">📌 Tareas con fecha límite</div>`;
+    tasksDue.forEach(t=>{
+      const p=DB.projects.find(x=>x.id===t.projectId);
+      html+=`<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:4px;cursor:pointer;"
+        onclick="openEditTask('${t.id}')">
+        <span style="font-size:0.9rem;">${p?.emoji||'📌'}</span>
+        <div style="flex:1;font-size:0.82rem;font-weight:700;">${t.title}</div>
+      </div>`;
+    });
+  }
+
+  if(!blocks.length&&!subs.length&&!tasksDue.length){
+    html=`<div style="text-align:center;padding:20px;color:var(--text-dim);font-size:0.8rem;">Sin actividad este día</div>`;
+  }
+
+  contentEl.innerHTML=html;
+}
+
+function closeDayPanel(){
+  document.getElementById('cal-day-panel').style.display='none';
+  calSelectedDay=null;
+  renderCalendar();
+}
+
+// ── TIME BLOCK CRUD ───────────────────────────────────────
+function openAddBlockModal(ds, time){
+  document.getElementById('block-modal-title').textContent='Bloquear Tiempo';
+  document.getElementById('editing-block-id').value='';
+  document.getElementById('block-title').value='';
+  document.getElementById('block-start').value=time||'09:00';
+  document.getElementById('block-end').value=time?`${String(parseInt(time)+1).padStart(2,'0')}:00`:'10:00';
+  document.getElementById('btn-delete-block').style.display='none';
+  const dateToUse=ds||calSelectedDay||new Date().toISOString().split('T')[0];
+  document.getElementById('block-date').value=dateToUse;
+  document.getElementById('block-date-native').value=dateToUse;
+  const dtxt=document.getElementById('block-date-display-text');
+  dtxt.textContent=formatDate(dateToUse); dtxt.style.color='var(--text)';
+  calBlockDateValue=dateToUse;
+  // Populate subtask select
+  populateBlockSubtaskSelect('');
+  selectBlockColor('#4f3ff0',document.querySelector('.color-dot'));
+  openModal('modal-add-block');
+}
+
+function openEditBlock(id, e){
+  if(e) e.stopPropagation();
+  const b=(DB.timeBlocks||[]).find(x=>x.id===id);
+  if(!b) return;
+  document.getElementById('block-modal-title').textContent='Editar Bloque';
+  document.getElementById('editing-block-id').value=id;
+  document.getElementById('block-title').value=b.title;
+  document.getElementById('block-start').value=b.start||'09:00';
+  document.getElementById('block-end').value=b.end||'10:00';
+  document.getElementById('block-date').value=b.date;
+  document.getElementById('block-date-native').value=b.date;
+  const dtxt=document.getElementById('block-date-display-text');
+  dtxt.textContent=formatDate(b.date); dtxt.style.color='var(--text)';
+  calBlockDateValue=b.date;
+  document.getElementById('btn-delete-block').style.display='flex';
+  populateBlockSubtaskSelect(b.subtaskId||'');
+  // Set color
+  const dots=document.querySelectorAll('.color-dot');
+  dots.forEach(d=>d.style.border='3px solid transparent');
+  const matchDot=[...dots].find(d=>d.style.background===b.color);
+  if(matchDot) matchDot.style.border='3px solid var(--border)';
+  document.getElementById('block-color').value=b.color||'#4f3ff0';
+  calSelectedBlockColor=b.color||'#4f3ff0';
+  openModal('modal-add-block');
+}
+
+function populateBlockSubtaskSelect(selectedId){
+  const sel=document.getElementById('block-subtask');
+  const opts=['<option value="">— Ninguna —</option>'];
+  DB.tasks.forEach(t=>{
+    const proj=DB.projects.find(p=>p.id===t.projectId);
+    if((t.subtasks||[]).length){
+      opts.push(`<optgroup label="${proj?.emoji||''} ${t.title}">`);
+      t.subtasks.forEach(s=>{
+        opts.push(`<option value="${s.id}::${t.id}" ${s.id===selectedId?'selected':''}>${s.title}</option>`);
+      });
+      opts.push('</optgroup>');
+    }
+  });
+  sel.innerHTML=opts.join('');
+}
+
+function onBlockDateChange(isoVal){
+  document.getElementById('block-date').value=isoVal;
+  const dtxt=document.getElementById('block-date-display-text');
+  dtxt.textContent=isoVal?formatDate(isoVal):'Seleccionar fecha';
+  dtxt.style.color=isoVal?'var(--text)':'var(--text-dim)';
+  calBlockDateValue=isoVal;
+}
+
+function selectBlockColor(color, btn){
+  calSelectedBlockColor=color;
+  document.getElementById('block-color').value=color;
+  document.querySelectorAll('.color-dot').forEach(d=>d.style.border='3px solid transparent');
+  if(btn) btn.style.border='3px solid var(--border)';
+}
+
+function saveTimeBlock(){
+  const title=document.getElementById('block-title').value.trim();
+  if(!title){alert('El título es obligatorio');return;}
+  const date=document.getElementById('block-date').value;
+  if(!date){alert('Selecciona una fecha');return;}
+  const editId=document.getElementById('editing-block-id').value;
+  const subVal=document.getElementById('block-subtask').value;
+  const subParts=subVal?subVal.split('::'):[];
+  const block={
+    id:editId||uid(),
+    title,
+    date,
+    start:document.getElementById('block-start').value,
+    end:document.getElementById('block-end').value,
+    color:document.getElementById('block-color').value||'#4f3ff0',
+    subtaskId:subParts[0]||null,
+    taskId:subParts[1]||null,
+  };
+  if(!DB.timeBlocks) DB.timeBlocks=[];
+  if(editId){
+    const idx=DB.timeBlocks.findIndex(x=>x.id===editId);
+    if(idx!==-1) DB.timeBlocks[idx]=block;
+  } else {
+    DB.timeBlocks.push(block);
+  }
+  saveDB();
+  closeModal('modal-add-block');
+  renderCalendar();
+  if(calSelectedDay) renderDayPanel(calSelectedDay);
+}
+
+function deleteCurrentBlock(){
+  const id=document.getElementById('editing-block-id').value;
+  if(!id) return;
+  if(!confirm('¿Eliminar este bloque?')) return;
+  DB.timeBlocks=(DB.timeBlocks||[]).filter(b=>b.id!==id);
+  saveDB();
+  closeModal('modal-add-block');
+  renderCalendar();
+  if(calSelectedDay) renderDayPanel(calSelectedDay);
+}
+
+// ===================== POMODORO =====================
+let pomoInterval = null;
+let pomoRunning = false;
+let pomoSecondsLeft = 25 * 60;
+let pomoTotalSeconds = 25 * 60;
+let pomoMode = 'work'; // 'work' | 'short' | 'long'
+let pomoSessionsToday = 0;
+let pomoAccumulatedSecs = {}; // {subtaskId: totalSeconds}
+let pomoCurrentSubtaskId = null;
+let pomoCurrentTaskId = null;
+let pomoPanelOpen = false;
+
+function getPomoConfig(){
+  return {
+    work: parseInt(DB.settings.pomoWork||25),
+    short: parseInt(DB.settings.pomoShort||5),
+    long: parseInt(DB.settings.pomoLong||15),
+  };
+}
+
+function savePomoConfig(){
+  DB.settings.pomoWork = parseInt(document.getElementById('cfg-work').value)||25;
+  DB.settings.pomoShort = parseInt(document.getElementById('cfg-short').value)||5;
+  DB.settings.pomoLong = parseInt(document.getElementById('cfg-long').value)||15;
+  saveDB();
+  if(!pomoRunning) resetPomoTimer();
+}
+
+function togglePomoPanel(){
+  pomoPanelOpen = !pomoPanelOpen;
+  const panel = document.getElementById('pomo-panel');
+  const fab = document.getElementById('pomo-fab');
+  panel.style.display = pomoPanelOpen ? 'block' : 'none';
+  fab.style.transform = pomoPanelOpen ? 'scale(1.1)' : 'scale(1)';
+  if(pomoPanelOpen){
+    loadPomoConfig();
+    populatePomoSubtasks();
+    renderPomoComparison();
+    renderPomoDots();
+  }
+}
+
+function loadPomoConfig(){
+  const cfg = getPomoConfig();
+  document.getElementById('cfg-work').value = cfg.work;
+  document.getElementById('cfg-short').value = cfg.short;
+  document.getElementById('cfg-long').value = cfg.long;
+}
+
+function setPomoMode(mode, btn){
+  pomoMode = mode;
+  document.querySelectorAll('.pomo-mode-btn').forEach(b=>{
+    b.style.background = 'transparent';
+    b.style.color = 'var(--text-muted)';
+  });
+  btn.style.background = 'var(--border)';
+  btn.style.color = '#fff';
+  const labels = {work:'Trabajo', short:'Descanso corto', long:'Descanso largo'};
+  document.getElementById('pomo-mode-label').textContent = labels[mode];
+  if(!pomoRunning) resetPomoTimer();
+}
+
+function resetPomoTimer(){
+  clearInterval(pomoInterval);
+  pomoRunning = false;
+  const cfg = getPomoConfig();
+  const mins = {work:cfg.work, short:cfg.short, long:cfg.long}[pomoMode]||25;
+  pomoSecondsLeft = mins * 60;
+  pomoTotalSeconds = mins * 60;
+  updatePomoDisplay();
+  document.getElementById('pomo-start-btn').textContent = '▶ Iniciar';
+}
+
+function togglePomoTimer(){
+  if(pomoRunning){
+    // Pause
+    clearInterval(pomoInterval);
+    pomoRunning = false;
+    document.getElementById('pomo-start-btn').textContent = '▶ Continuar';
+  } else {
+    // Start / resume
+    pomoRunning = true;
+    document.getElementById('pomo-start-btn').textContent = '⏸ Pausar';
+    // Capture selected subtask at start
+    const sel = document.getElementById('pomo-subtask-select');
+    if(sel && sel.value) {
+      const parts = sel.value.split('::');
+      pomoCurrentSubtaskId = parts[0];
+      pomoCurrentTaskId = parts[1]||null;
+    }
+    pomoInterval = setInterval(()=>{
+      if(pomoSecondsLeft <= 0){
+        clearInterval(pomoInterval);
+        pomoRunning = false;
+        onPomoComplete();
+        return;
+      }
+      pomoSecondsLeft--;
+      // Track time on subtask
+      if(pomoCurrentSubtaskId && pomoMode==='work'){
+        if(!pomoAccumulatedSecs[pomoCurrentSubtaskId]) pomoAccumulatedSecs[pomoCurrentSubtaskId] = 0;
+        pomoAccumulatedSecs[pomoCurrentSubtaskId]++;
+        // Persist every 10s
+        if(pomoAccumulatedSecs[pomoCurrentSubtaskId] % 10 === 0) savePomoTracking();
+      }
+      updatePomoDisplay();
+    }, 1000);
+  }
+}
+
+function updatePomoDisplay(){
+  const m = Math.floor(pomoSecondsLeft/60);
+  const s = pomoSecondsLeft % 60;
+  document.getElementById('pomo-time').textContent =
+    `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  // Ring progress
+  const pct = pomoSecondsLeft / pomoTotalSeconds;
+  const circumference = 2 * Math.PI * 60; // 377
+  const offset = circumference * (1 - pct);
+  const ring = document.getElementById('pomo-ring');
+  if(ring){
+    ring.style.strokeDashoffset = offset;
+    ring.style.stroke = pct > 0.5 ? 'var(--border)' : pct > 0.2 ? '#b07800' : '#c8002a';
+  }
+  // FAB pulse when running
+  const fab = document.getElementById('pomo-fab');
+  if(fab) fab.textContent = pomoRunning ? (m+':'+String(s).padStart(2,'0')) : '🍅';
+}
+
+function onPomoComplete(){
+  if(pomoMode === 'work'){
+    pomoSessionsToday++;
+    savePomoTracking();
+    renderPomoDots();
+    renderPomoComparison();
+    if(navigator.vibrate) navigator.vibrate([200,100,200]);
+    // Auto-switch to short break
+    const autoBreak = document.querySelector('[data-mode="short"]');
+    if(autoBreak) setPomoMode('short', autoBreak);
+    document.getElementById('pomo-start-btn').textContent = '▶ Iniciar descanso';
+  } else {
+    const autoWork = document.querySelector('[data-mode="work"]');
+    if(autoWork) setPomoMode('work', autoWork);
+    document.getElementById('pomo-start-btn').textContent = '▶ Iniciar trabajo';
+  }
+  document.getElementById('pomo-time').textContent = '¡Listo! 🎉';
+}
+
+function savePomoTracking(){
+  // Persist accumulated secs into subtask.trackedSecs
+  DB.tasks.forEach(t=>{
+    (t.subtasks||[]).forEach(s=>{
+      if(pomoAccumulatedSecs[s.id]){
+        s.trackedSecs = (s.trackedSecs||0) + 1; // will be overwritten below
+      }
+    });
+  });
+  // Correct approach: store total per subtask
+  Object.entries(pomoAccumulatedSecs).forEach(([subId, secs])=>{
+    DB.tasks.forEach(t=>{
+      const sub = (t.subtasks||[]).find(s=>s.id===subId);
+      if(sub) sub.trackedSecs = secs;
+    });
+  });
+  DB.settings.pomoSessionsToday = pomoSessionsToday;
+  DB.settings.pomoSessionDate = new Date().toISOString().split('T')[0];
+  saveDB();
+}
+
+function renderPomoDots(){
+  const el = document.getElementById('pomo-sessions-dots');
+  if(!el) return;
+  const n = Math.min(pomoSessionsToday, 8);
+  el.innerHTML = Array(n).fill('<div style="width:8px;height:8px;border-radius:50%;background:var(--border);"></div>').join('')
+    + (pomoSessionsToday>8?`<span style="font-size:0.65rem;font-weight:800;color:var(--text-muted);">+${pomoSessionsToday-8}</span>`:'');
+  if(!n) el.innerHTML = '<span style="font-size:0.65rem;color:var(--text-dim);">Sin sesiones aún</span>';
+}
+
+function populatePomoSubtasks(){
+  const sel = document.getElementById('pomo-subtask-select');
+  if(!sel) return;
+  const todayStr = new Date().toISOString().split('T')[0];
+  const options = ['<option value="">— Selecciona subtarea —</option>'];
+  DB.tasks.forEach(t=>{
+    const proj = DB.projects.find(p=>p.id===t.projectId);
+    const relevantSubs = (t.subtasks||[]).filter(s=>!s.done && (!s.date || s.date<=todayStr));
+    if(relevantSubs.length){
+      options.push(`<optgroup label="${proj?proj.emoji+' ':''} ${t.title}">`);
+      relevantSubs.forEach(s=>{
+        const tracked = s.trackedSecs ? ` · ${Math.round(s.trackedSecs/60)}min registrados` : '';
+        const est = s.mins ? ` (${s.mins}min est.)` : '';
+        options.push(`<option value="${s.id}::${t.id}">${s.title}${est}${tracked}</option>`);
+      });
+      options.push('</optgroup>');
+    }
+  });
+  sel.innerHTML = options.join('');
+  // Restore previous selection
+  if(pomoCurrentSubtaskId) sel.value = pomoCurrentSubtaskId+'::'+pomoCurrentTaskId;
+  updatePomoSubtaskInfo();
+  sel.onchange = updatePomoSubtaskInfo;
+}
+
+function updatePomoSubtaskInfo(){
+  const sel = document.getElementById('pomo-subtask-select');
+  const infoEl = document.getElementById('pomo-subtask-info');
+  if(!sel||!infoEl) return;
+  if(!sel.value){ infoEl.textContent=''; return; }
+  const [subId, taskId] = sel.value.split('::');
+  const task = DB.tasks.find(t=>t.id===taskId);
+  const sub = (task?.subtasks||[]).find(s=>s.id===subId);
+  if(!sub){ infoEl.textContent=''; return; }
+  const tracked = sub.trackedSecs||0;
+  const trackedMin = Math.round(tracked/60);
+  const est = sub.mins||0;
+  if(est){
+    const diff = trackedMin - est;
+    const color = diff>0?'var(--red)':diff<-5?'var(--green)':'var(--yellow)';
+    infoEl.innerHTML = `<span style="color:${color};font-weight:800;">⏱ ${trackedMin}min registrados / ${est}min estimados ${diff>0?'(+'+diff+'min sobre estimado)':diff<0?'('+Math.abs(diff)+'min restantes)':'(en tiempo)'}</span>`;
+  } else {
+    infoEl.innerHTML = `<span style="color:var(--text-muted);">⏱ ${trackedMin}min registrados</span>`;
+  }
+}
+
+function renderPomoComparison(){
+  const el = document.getElementById('pomo-comparison');
+  const body = document.getElementById('pomo-comparison-body');
+  if(!el||!body) return;
+  const subtasksWithTracking = [];
+  DB.tasks.forEach(t=>{
+    (t.subtasks||[]).forEach(s=>{
+      if(s.trackedSecs && s.trackedSecs>0){
+        subtasksWithTracking.push({...s, taskTitle:t.title});
+      }
+    });
+  });
+  if(!subtasksWithTracking.length){ el.style.display='none'; return; }
+  el.style.display='block';
+  body.innerHTML = subtasksWithTracking.map(s=>{
+    const tracked = Math.round((s.trackedSecs||0)/60);
+    const est = s.mins||0;
+    const pct = est>0 ? Math.min(Math.round(tracked/est*100),150) : 100;
+    const barColor = pct>110?'var(--red)':pct>90?'var(--yellow)':'var(--green)';
+    return `<div style="margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;font-size:0.65rem;font-weight:700;margin-bottom:3px;">
+        <span style="color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px;">${s.title}</span>
+        <span style="color:${barColor};flex-shrink:0;">${tracked}m${est?' / '+est+'m':''}</span>
+      </div>
+      ${est?`<div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden;">
+        <div style="height:100%;width:${Math.min(pct,100)}%;background:${barColor};border-radius:3px;"></div>
+      </div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function togglePomoConfig(){
+  const el = document.getElementById('pomo-config');
+  el.style.display = el.style.display==='none'?'block':'none';
+}
+
+// Load today's sessions on init
+function initPomodoro(){
+  const todayStr = new Date().toISOString().split('T')[0];
+  if(DB.settings.pomoSessionDate === todayStr){
+    pomoSessionsToday = DB.settings.pomoSessionsToday||0;
+  }
+  // Load tracked secs into memory
+  DB.tasks.forEach(t=>{
+    (t.subtasks||[]).forEach(s=>{
+      if(s.trackedSecs) pomoAccumulatedSecs[s.id] = s.trackedSecs;
+    });
+  });
+  resetPomoTimer();
+}
+
 // ===================== INIT =====================
 loadDB();
 renderDashboard();
 renderProjects();
 populateMatrixFilter();
+initPomodoro();
 </script>
 </body>
 </html>
