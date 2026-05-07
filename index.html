@@ -72,7 +72,7 @@ h1,h2,h3,.brand{font-family:'Nunito',sans-serif;}
   font-family:'Nunito',sans-serif;
 }
 .nav-btn .nav-icon{font-size:1.1rem;line-height:1;}
-.nav-btn .nav-label{font-size:0.62rem;font-weight:800;text-transform:uppercase;letter-spacing:0.2px;line-height:1;}
+.nav-btn .nav-label{font-size:0.55rem;font-weight:800;text-transform:uppercase;letter-spacing:0.2px;line-height:1;}
 .nav-btn.active{color:var(--accent);background:rgba(79,63,240,0.1);}
 .nav-add{background:var(--border) !important;color:#fff !important;border-radius:var(--radius-sm);}
 .nav-add .nav-icon,.nav-add .nav-label{color:#fff !important;}
@@ -260,6 +260,39 @@ input[type=range]::-webkit-slider-thumb{
 .category-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:2px solid var(--border);}
 .cat-emoji-preview{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
 
+/* WEEK STRIP */
+.week-day-btn{
+  flex-shrink:0;display:flex;flex-direction:column;align-items:center;
+  gap:2px;padding:8px 10px;border-radius:var(--radius-sm);
+  border:2px solid var(--border);background:var(--card);
+  cursor:pointer;transition:var(--transition);min-width:44px;
+}
+.week-day-btn.active{background:var(--border);color:#fff;}
+.week-day-btn.today-btn{border-color:var(--accent);}
+.week-day-btn.has-items::after{content:'•';display:block;font-size:0.7rem;color:var(--accent);margin-top:-2px;}
+.week-day-btn.overloaded{border-color:var(--red);}
+.week-day-name{font-size:0.6rem;font-weight:900;text-transform:uppercase;letter-spacing:0.5px;}
+.week-day-num{font-size:1rem;font-weight:900;line-height:1;}
+.week-day-load{font-size:0.55rem;font-weight:700;margin-top:2px;}
+
+/* PENDING TASK (no date) */
+.pending-task-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--radius-xs);background:var(--bg);border:1px solid var(--border-light);margin-bottom:5px;cursor:pointer;}
+.pending-task-item:active{opacity:0.7;}
+
+/* AGENDA SUBTASK ITEM */
+.agenda-item{background:var(--card);border:2px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start;}
+.agenda-item.overdue{border-color:var(--red);background:rgba(200,0,42,0.04);}
+.agenda-item.done-item{opacity:0.45;}
+.agenda-check{width:24px;height:24px;border-radius:50%;border:2px solid var(--border);background:transparent;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:0.7rem;transition:var(--transition);}
+.agenda-check.checked{background:var(--border);border-color:var(--border);color:#fff;}
+.agenda-item-body{flex:1;min-width:0;}
+.agenda-item-title{font-weight:700;font-size:0.9rem;line-height:1.3;}
+.agenda-item-title.done{text-decoration:line-through;color:var(--text-muted);}
+.agenda-item-meta{display:flex;gap:6px;align-items:center;margin-top:5px;flex-wrap:wrap;}
+.agenda-mins{font-size:0.65rem;font-weight:800;background:var(--bg);border:1px solid var(--border);padding:2px 8px;border-radius:20px;}
+.agenda-task-ref{font-size:0.62rem;color:var(--text-muted);font-weight:600;}
+.agenda-overdue-badge{font-size:0.6rem;font-weight:800;color:var(--red);background:rgba(200,0,42,0.1);border:1px solid rgba(200,0,42,0.3);padding:2px 7px;border-radius:20px;}
+
 /* CONFETTI */
 @keyframes confetti-fall{0%{transform:translateY(-10px) rotate(0deg);opacity:1;}100%{transform:translateY(80px) rotate(720deg);opacity:0;}}
 .confetti-dot{position:fixed;width:6px;height:6px;border-radius:50%;pointer-events:none;animation:confetti-fall 0.6s ease-out forwards;z-index:9999;}
@@ -301,6 +334,20 @@ input[type=range]::-webkit-slider-thumb{
         <div class="hero-day" id="dash-day-label"></div>
         <div class="hero-title" id="dash-headline">¿En qué te enfocas HOY?</div>
         <div class="hero-subtitle" id="dash-subtitle"></div>
+      </div>
+      <!-- MI DÍA — subtask agenda -->
+      <div class="card" id="mi-dia-card" style="margin-bottom:12px;border:2px solid var(--border);">
+        <div class="collapsible-header" onclick="toggleCollapse('mi-dia-body')">
+          <div>
+            <div class="section-label" style="margin:0;">📋 MI DÍA — AGENDA</div>
+            <div id="mi-dia-summary" style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;"></div>
+          </div>
+          <span style="color:var(--text-dim);font-size:0.8rem;">▾</span>
+        </div>
+        <div class="collapsible-body" id="mi-dia-body">
+          <div style="height:12px;"></div>
+          <div id="mi-dia-list"></div>
+        </div>
       </div>
       <!-- progress -->
       <div class="card card-sm" style="margin-bottom:12px;background:var(--surface);border:1px solid var(--border);">
@@ -383,6 +430,32 @@ input[type=range]::-webkit-slider-thumb{
       <div class="matrix-grid" id="matrix-grid"></div>
     </div>
 
+    <!-- AGENDA VIEW -->
+    <div class="view" id="view-agenda">
+
+      <!-- WEEK STRIP -->
+      <div id="agenda-week-strip" style="display:flex;gap:4px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px;"></div>
+
+      <!-- DAY HEADER -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <button class="back-btn" onclick="agendaChangeDay(-1)" style="flex-shrink:0;">←</button>
+        <div style="flex:1;text-align:center;">
+          <div style="font-weight:900;font-size:1rem;" id="agenda-day-title"></div>
+          <div style="font-size:0.7rem;color:var(--text-muted);" id="agenda-day-date"></div>
+        </div>
+        <button class="back-btn" onclick="agendaChangeDay(1)" style="flex-shrink:0;">→</button>
+      </div>
+
+      <!-- CAPACITY BAR -->
+      <div id="agenda-capacity-bar" style="margin-bottom:12px;"></div>
+
+      <!-- PENDING TASKS (no subtask dates) collapsed -->
+      <div id="agenda-pending-block" style="margin-bottom:10px;"></div>
+
+      <!-- SUBTASK LIST -->
+      <div id="agenda-list"></div>
+    </div>
+
     <!-- SETTINGS -->
     <div class="view" id="view-settings">
       <div class="settings-section">
@@ -426,6 +499,9 @@ input[type=range]::-webkit-slider-thumb{
     </button>
     <button class="nav-btn nav-add" onclick="openModal('modal-add-task')">
       <span class="nav-icon">＋</span><span class="nav-label">Agregar</span>
+    </button>
+    <button class="nav-btn" onclick="switchView('agenda',this);initAgendaView()">
+      <span class="nav-icon">📋</span><span class="nav-label">Agenda</span>
     </button>
     <button class="nav-btn" onclick="switchView('matrix',this)">
       <span class="nav-icon">🔥</span><span class="nav-label">Matriz</span>
@@ -513,27 +589,82 @@ input[type=range]::-webkit-slider-thumb{
     <div class="field">
       <label class="field-label">📅 Fecha límite (opcional)</label>
       <div style="position:relative;">
-        <input type="text" class="input" id="task-due-display"
-          placeholder="DD/MM/AAAA"
-          maxlength="10"
-          oninput="handleDateMask(this)"
-          style="cursor:text;letter-spacing:1px;">
+        <input type="date" id="task-due-native"
+          style="position:absolute;opacity:0;width:100%;height:100%;top:0;left:0;cursor:pointer;z-index:2;"
+          onchange="onTaskDueChange(this.value)">
+        <div class="input" id="task-due-display"
+          onclick="document.getElementById('task-due-native').showPicker?document.getElementById('task-due-native').showPicker():document.getElementById('task-due-native').click()"
+          style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none;">
+          <span id="task-due-display-text" style="color:var(--text-dim);">Seleccionar fecha</span>
+          <span>📅</span>
+        </div>
         <input type="hidden" id="task-due">
-        <span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:1rem;">📅</span>
       </div>
       <div id="overload-warning" style="display:none;margin-top:10px;"></div>
     </div>
     <!-- SUBTASKS -->
     <div class="field">
-      <label class="field-label">Subtareas</label>
+      <label class="field-label">Subtareas <span id="subtask-total-label" style="color:var(--accent);font-size:0.7rem;font-weight:900;"></span></label>
       <div id="subtask-list-modal"></div>
-      <div style="display:flex;gap:8px;margin-top:8px;">
+      <div style="display:flex;gap:6px;margin-top:10px;">
         <input type="text" class="input" id="new-subtask-input" placeholder="Nueva subtarea..." style="flex:1;" onkeydown="if(event.key==='Enter')addSubtaskModal()">
-        <button class="btn btn-secondary btn-sm" style="width:auto;padding:0 14px;" onclick="addSubtaskModal()">＋</button>
+        <button class="btn btn-secondary btn-sm" style="width:auto;padding:0 16px;font-weight:900;" onclick="addSubtaskModal()">＋</button>
       </div>
+      <div style="font-size:0.65rem;color:var(--text-dim);margin-top:6px;">Toca ⚡ en cada subtarea para asignar duración, fecha y prioridad</div>
     </div>
     <button class="btn btn-primary" onclick="saveTask()" style="margin-top:8px;">GUARDAR TAREA</button>
     <button class="btn btn-danger btn-sm" id="btn-delete-task" style="margin-top:8px;display:none;" onclick="deleteCurrentTask()">🗑️ Eliminar tarea</button>
+  </div>
+</div>
+
+<!-- MODAL: SUBTASK PRIORITY -->
+<div class="modal-overlay" id="modal-subtask-priority">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">
+      <span>⚡ Priorizar subtarea</span>
+      <button class="btn-icon-sm" onclick="closeModal('modal-subtask-priority')">✕</button>
+    </div>
+    <div id="subtask-priority-name" style="font-weight:800;font-size:1rem;margin-bottom:4px;"></div>
+    <div id="subtask-priority-parent" style="font-size:0.72rem;color:var(--text-muted);margin-bottom:16px;"></div>
+
+    <!-- LIVE SUBTASK SCORE -->
+    <div class="score-meter" style="margin-bottom:16px;">
+      <div class="score-number" id="sub-live-score">0</div>
+      <div class="score-label">Puntuación de subtarea</div>
+      <div class="progress-bar" style="margin-top:8px;height:8px;">
+        <div class="progress-fill" id="sub-live-score-bar" style="width:0%;border-radius:4px;"></div>
+      </div>
+    </div>
+
+    <div class="slider-row">
+      <div class="slider-header">
+        <span class="slider-label">🔥 Urgencia <span style="font-size:0.55rem;color:var(--text-dim);">¿Qué tan urgente es?</span></span>
+        <span class="slider-value" id="sub-val-urgency">3</span>
+      </div>
+      <input type="range" min="1" max="5" value="3" id="sub-slider-urgency" oninput="updateSubSlider('urgency',this.value)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-header">
+        <span class="slider-label">🧩 Dificultad <span style="font-size:0.55rem;color:var(--text-dim);">Mayor dificultad = priorizar antes</span></span>
+        <span class="slider-value" id="sub-val-difficulty">3</span>
+      </div>
+      <input type="range" min="1" max="5" value="3" id="sub-slider-difficulty" oninput="updateSubSlider('difficulty',this.value)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-header">
+        <span class="slider-label">🎯 Influencia en objetivos <span style="font-size:0.55rem;color:var(--text-dim);">¿Mueve la aguja?</span></span>
+        <span class="slider-value" id="sub-val-impact">3</span>
+      </div>
+      <input type="range" min="1" max="5" value="3" id="sub-slider-impact" oninput="updateSubSlider('impact',this.value)">
+    </div>
+
+    <!-- SUGGESTED DAY -->
+    <div id="sub-suggested-day" style="margin-top:16px;"></div>
+
+    <input type="hidden" id="sub-editing-task-id">
+    <input type="hidden" id="sub-editing-subtask-id">
+    <button class="btn btn-primary" onclick="saveSubtaskPriority()" style="margin-top:12px;">GUARDAR PRIORIDAD</button>
   </div>
 </div>
 
@@ -635,17 +766,40 @@ function displayToISO(str){
 }
 
 function handleDateMask(input){
-  // Auto-insert slashes as user types
-  let val = input.value.replace(/\D/g,''); // digits only
+  let val = input.value.replace(/\D/g,'');
   if(val.length>2) val = val.slice(0,2)+'/'+val.slice(2);
   if(val.length>5) val = val.slice(0,5)+'/'+val.slice(5);
   if(val.length>10) val = val.slice(0,10);
   input.value = val;
-  // Sync hidden field
   const iso = displayToISO(val);
   document.getElementById('task-due').value = iso;
   if(iso) checkAndShowOverloadWarning();
   else document.getElementById('overload-warning').style.display='none';
+}
+
+function onTaskDueChange(isoVal){
+  // Called when native date picker fires
+  document.getElementById('task-due').value = isoVal;
+  document.getElementById('task-due-native').value = isoVal;
+  const displayText = document.getElementById('task-due-display-text');
+  if(isoVal){
+    displayText.textContent = formatDate(isoVal);
+    displayText.style.color = 'var(--text)';
+    checkAndShowOverloadWarning();
+  } else {
+    displayText.textContent = 'Seleccionar fecha';
+    displayText.style.color = 'var(--text-dim)';
+    document.getElementById('overload-warning').style.display='none';
+  }
+}
+
+function onNewSubtaskDateChange(isoVal){
+  const display = document.getElementById('new-subtask-date');
+  if(display) display.value = isoVal ? formatDate(isoVal) : '';
+}
+
+function updateSubtaskDateDisplay(i, displayVal){
+  modalSubtasks[i].date = displayToISO(displayVal)||null;
 }
 
 function uid(){
@@ -760,7 +914,9 @@ function initTaskModal(){
   document.getElementById('task-title').value = '';
   document.getElementById('task-desc').value = '';
   document.getElementById('task-due').value = '';
-  document.getElementById('task-due-display').value = '';
+  document.getElementById('task-due-native').value = '';
+  const ddt = document.getElementById('task-due-display-text');
+  if(ddt){ ddt.textContent='Seleccionar fecha'; ddt.style.color='var(--text-dim)'; }
   document.getElementById('task-status').value = 'TODO';
   document.getElementById('btn-delete-task').style.display = 'none';
   // reset sliders
@@ -783,7 +939,8 @@ function initTaskModal(){
 
 function clearTaskModal(){
   document.getElementById('editing-task-id').value = '';
-  currentProjectId = null;
+  // Don't reset currentProjectId here — saveTask needs it
+  // It gets reset when user navigates away from project detail
 }
 
 function openAddTaskForProject(){
@@ -799,7 +956,12 @@ function openEditTask(taskId){
   document.getElementById('task-title').value = t.title;
   document.getElementById('task-desc').value = t.description||'';
   document.getElementById('task-due').value = t.due||'';
-  document.getElementById('task-due-display').value = t.due ? formatDate(t.due) : '';
+  document.getElementById('task-due-native').value = t.due||'';
+  const ddtE = document.getElementById('task-due-display-text');
+  if(ddtE){
+    ddtE.textContent = t.due ? formatDate(t.due) : 'Seleccionar fecha';
+    ddtE.style.color = t.due ? 'var(--text)' : 'var(--text-dim)';
+  }
   document.getElementById('task-status').value = t.status;
   document.getElementById('btn-delete-task').style.display = 'flex';
   ['financial','health','momentum','learning'].forEach(k=>{
@@ -848,22 +1010,29 @@ function checkAndShowOverloadWarning(){
       <div style="height:100%;width:${Math.min(info.pct,100)}%;background:${barColor};border-radius:4px;transition:width 0.3s;"></div>
     </div>`;
 
-  if(info.overloaded){
+  // CASE 1: Task alone exceeds full day capacity
+  if(info.exceedsDayAlone){
+    html += `<div style="background:rgba(200,0,42,0.08);border:1.5px solid rgba(200,0,42,0.3);border-radius:8px;padding:10px;margin-bottom:8px;">
+      <div style="font-size:0.78rem;font-weight:900;color:var(--red);margin-bottom:4px;">🚨 Esta tarea supera tu capacidad diaria</div>
+      <div style="font-size:0.72rem;color:var(--text-muted);">Necesita <strong>${info.curEst}min</strong> pero tu día más largo tiene <strong>${info.cap}min</strong> disponibles.</div>
+      <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">💡 Considera dividirla en subtareas más pequeñas o aumentar tu disponibilidad en Configuración.</div>
+    </div>`;
+  } else if(info.overloaded){
     const next = getNextAvailableDay(dateStr);
     html += `<div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:8px;">
-      Este día ya tiene ${info.load}min ocupados. Con esta tarea llegarías a ${info.total}min (${info.cap}min disponibles).
+      Este día ya tiene <strong>${info.load}min</strong> ocupados. Con esta tarea llegarías a <strong>${info.total}min</strong> (solo hay ${info.cap}min disponibles).
     </div>`;
     if(next){
       const nd = new Date(next+'T12:00:00');
       const nextName = DAY_NAMES[nd.getDay()===0?6:nd.getDay()-1];
-      html += `<button onclick="moveToSuggestedDay('${next}')" style="width:100%;background:var(--accent);color:#fff;border:none;padding:8px 12px;border-radius:var(--radius-xs);font-family:'Nunito',sans-serif;font-weight:800;font-size:0.78rem;cursor:pointer;">
-        📅 Mover al ${nextName} ${next} (tiene espacio)
+      html += `<button onclick="moveToSuggestedDay('${next}')" style="width:100%;background:var(--border);color:#fff;border:none;padding:8px 12px;border-radius:var(--radius-xs);font-family:'Nunito',sans-serif;font-weight:800;font-size:0.78rem;cursor:pointer;">
+        📅 Mover al ${nextName} ${formatDate(next)} — tiene espacio
       </button>`;
     }
   } else if(info.pct>=80){
-    html += `<div style="font-size:0.75rem;color:var(--yellow);">Casi lleno — quedan ${info.cap-info.total}min disponibles.</div>`;
+    html += `<div style="font-size:0.75rem;color:var(--yellow);font-weight:700;">⚠️ Casi lleno — quedan ${info.cap-info.total}min disponibles este día.</div>`;
   } else {
-    html += `<div style="font-size:0.75rem;color:var(--green);">Bien — quedan ${info.cap-info.total}min libres en este día.</div>`;
+    html += `<div style="font-size:0.75rem;color:var(--green);font-weight:700;">✓ Cabe bien — quedan ${info.cap-info.total}min libres después de esta tarea.</div>`;
   }
 
   html += '</div>';
@@ -872,8 +1041,7 @@ function checkAndShowOverloadWarning(){
 }
 
 function moveToSuggestedDay(dateStr){
-  document.getElementById('task-due').value = dateStr;
-  checkAndShowOverloadWarning();
+  onTaskDueChange(dateStr);
 }
 
 function saveTask(){
@@ -881,6 +1049,12 @@ function saveTask(){
   if(!title){ alert('El título es obligatorio'); return; }
   const editId = document.getElementById('editing-task-id').value;
   const tBtn = document.querySelector('.toggle-btn.active');
+  // Auto-calc timeEstimate from subtask total if subtasks have mins
+  const subTotalMins = modalSubtasks.reduce((s,x)=>s+(x.mins||0),0);
+  let timeEstimate = tBtn ? tBtn.dataset.time : 'QUICK';
+  if(subTotalMins > 0){
+    timeEstimate = subTotalMins<=20?'QUICK':subTotalMins<=60?'MEDIUM':'DEEP';
+  }
   const task = {
     id: editId || uid(),
     title,
@@ -891,7 +1065,8 @@ function saveTask(){
     health: parseInt(document.getElementById('slider-health').value),
     momentum: parseInt(document.getElementById('slider-momentum').value),
     learning: parseInt(document.getElementById('slider-learning').value),
-    timeEstimate: tBtn ? tBtn.dataset.time : 'QUICK',
+    timeEstimate,
+    totalMins: subTotalMins || null,
     due: document.getElementById('task-due').value,
     subtasks: modalSubtasks,
     createdAt: editId ? (DB.tasks.find(x=>x.id===editId)||{}).createdAt : new Date().toISOString(),
@@ -905,11 +1080,18 @@ function saveTask(){
     DB.tasks.push(task);
   }
   saveDB();
+  // Save projectId before modal closes (clearTaskModal resets currentProjectId)
+  const savedProjectId = task.projectId;
   closeModal('modal-add-task');
   renderDashboard();
   renderProjects();
   renderMatrix();
-  if(currentProjectId) renderProjectDetail(currentProjectId);
+  // Re-open detail view for the task's project if we're in project view
+  const projDetailVisible = document.getElementById('project-detail-view').style.display !== 'none';
+  if(projDetailVisible || savedProjectId){
+    currentProjectId = savedProjectId;
+    renderProjectDetail(savedProjectId);
+  }
   confettiBurst();
 }
 
@@ -917,33 +1099,295 @@ function deleteCurrentTask(){
   const id = document.getElementById('editing-task-id').value;
   if(!id) return;
   if(!confirm('¿Eliminar esta tarea?')) return;
+  const task = DB.tasks.find(t=>t.id===id);
+  const projId = task?.projectId;
   DB.tasks = DB.tasks.filter(t=>t.id!==id);
   saveDB();
   closeModal('modal-add-task');
   renderDashboard();
   renderProjects();
   renderMatrix();
+  if(projId){
+    const projDetailVisible = document.getElementById('project-detail-view').style.display !== 'none';
+    if(projDetailVisible){ currentProjectId = projId; renderProjectDetail(projId); }
+  }
 }
 
 // ===================== SUBTASKS =====================
+function maskSubtaskDate(input){
+  let val = input.value.replace(/\D/g,'');
+  if(val.length>2) val = val.slice(0,2)+'/'+val.slice(2);
+  if(val.length>5) val = val.slice(0,5)+'/'+val.slice(5);
+  if(val.length>10) val = val.slice(0,10);
+  input.value = val;
+}
+
 function addSubtaskModal(){
   const inp = document.getElementById('new-subtask-input');
   const val = inp.value.trim();
   if(!val) return;
-  modalSubtasks.push({id:uid(),title:val,done:false});
+  modalSubtasks.push({id:uid(), title:val, done:false, mins:null, date:null, urgency:3, difficulty:3, impact:3});
   inp.value = '';
   renderModalSubtasks();
 }
 
+function calcSubScore(s, parentTask){
+  const parentScore = parentTask ? calcScore(parentTask) : 50;
+  const urgency = s.urgency||3;
+  const difficulty = s.difficulty||3;
+  const impact = s.impact||3;
+  const ownScore = urgency*2.5 + difficulty*1.5 + impact*3.0;
+  const ownNorm = Math.min(100, Math.round(ownScore / 35 * 100));
+  return Math.round(parentScore * 0.6 + ownNorm * 0.4);
+}
+
 function renderModalSubtasks(){
   const el = document.getElementById('subtask-list-modal');
+  const totalMins = modalSubtasks.reduce((s,x)=>s+(x.mins||0),0);
+  const lbl = document.getElementById('subtask-total-label');
+  if(lbl) lbl.textContent = totalMins>0 ? `— Total: ${totalMins}min` : '';
   if(!modalSubtasks.length){ el.innerHTML=''; return; }
-  el.innerHTML = modalSubtasks.map((s,i)=>`
-    <div class="subtask-item">
-      <button class="subtask-check ${s.done?'checked':''}" onclick="toggleModalSubtask(${i})">${s.done?'✓':''}</button>
-      <span class="subtask-title ${s.done?'done':''}">${s.title}</span>
-      <button class="subtask-del" onclick="removeModalSubtask(${i})">✕</button>
-    </div>`).join('');
+  // Get parent task for score calc
+  const editId = document.getElementById('editing-task-id').value;
+  const parentTask = editId ? DB.tasks.find(t=>t.id===editId) : null;
+  el.innerHTML = modalSubtasks.map((s,i)=>{
+    const subScore = calcSubScore(s, parentTask);
+    const scoreColor = subScore>=70?'#0a8a4f':subScore>=40?'#b07800':'#c8002a';
+    const hasPriority = s.urgency||s.difficulty||s.impact;
+    const hasMins = !!s.mins;
+    const hasDate = !!s.date;
+    return `<div style="background:var(--card);border:2px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px;overflow:hidden;">
+      <!-- ROW 1: check + title + score + delete -->
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;">
+        <button class="subtask-check ${s.done?'checked':''}" onclick="toggleModalSubtask(${i})" style="flex-shrink:0;">${s.done?'✓':''}</button>
+        <span style="flex:1;font-weight:700;font-size:0.9rem;line-height:1.3;${s.done?'text-decoration:line-through;color:var(--text-muted);':''}">${s.title}</span>
+        <div style="background:${scoreColor}22;color:${scoreColor};border-radius:20px;padding:2px 8px;font-size:0.65rem;font-weight:900;flex-shrink:0;border:1px solid ${scoreColor}44;">${subScore}pts</div>
+        <button class="subtask-del" onclick="removeModalSubtask(${i})" style="flex-shrink:0;">✕</button>
+      </div>
+      <!-- ROW 2: action bar -->
+      <div style="display:flex;align-items:center;gap:0;border-top:1px solid var(--border);">
+        <!-- Priority button — full width on left -->
+        <button onclick="openSubtaskPriorityModal(${i})"
+          style="flex:1;height:36px;border:none;border-right:1px solid var(--border);
+            background:${hasPriority?'var(--border)':'var(--bg)'};
+            color:${hasPriority?'#fff':'var(--text-muted)'};
+            font-family:'Nunito',sans-serif;font-size:0.7rem;font-weight:800;
+            cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;">
+          ⚡ ${hasPriority?'Editar prioridad':'Asignar prioridad + fecha'}
+        </button>
+        <!-- Info chips -->
+        <div style="display:flex;align-items:center;gap:6px;padding:0 10px;flex-shrink:0;">
+          ${hasMins?`<span style="font-size:0.65rem;font-weight:800;color:var(--text-muted);">⏱${s.mins}m</span>`:''}
+          ${hasDate?`<span style="font-size:0.65rem;font-weight:800;color:var(--accent);">📅${formatDate(s.date)}</span>`:'<span style="font-size:0.6rem;color:var(--text-dim);">Sin fecha</span>'}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateSubtaskMins(i, val){
+  modalSubtasks[i].mins = parseInt(val)||null;
+  const totalMins = modalSubtasks.reduce((s,x)=>s+(x.mins||0),0);
+  const lbl = document.getElementById('subtask-total-label');
+  if(lbl) lbl.textContent = totalMins>0 ? `— Total: ${totalMins}min` : '';
+}
+
+function updateSubtaskDate(i, isoVal){
+  modalSubtasks[i].date = isoVal||null;
+}
+
+// ── SUBTASK PRIORITY MODAL ────────────────────────────────
+let editingSubIdx = null;
+
+function openSubtaskPriorityModal(i){
+  editingSubIdx = i;
+  const s = modalSubtasks[i];
+  const editId = document.getElementById('editing-task-id').value;
+  const parentTask = editId ? DB.tasks.find(t=>t.id===editId) : null;
+  document.getElementById('subtask-priority-name').textContent = s.title;
+  document.getElementById('subtask-priority-parent').textContent = parentTask ? `Tarea: ${parentTask.title}` : '';
+  // Set sliders
+  ['urgency','difficulty','impact'].forEach(k=>{
+    const v = s[k]||3;
+    document.getElementById(`sub-slider-${k}`).value = v;
+    document.getElementById(`sub-val-${k}`).textContent = v;
+  });
+  // Set mins + date if present
+  document.getElementById('sub-editing-task-id').value = editId||'';
+  document.getElementById('sub-editing-subtask-id').value = s.id;
+  refreshSubScore(s, parentTask);
+  renderSubSuggestedDay(i, parentTask);
+  openModal('modal-subtask-priority');
+}
+
+function updateSubSlider(name, val){
+  document.getElementById(`sub-val-${name}`).textContent = val;
+  const editId = document.getElementById('sub-editing-task-id').value;
+  const parentTask = editId ? DB.tasks.find(t=>t.id===editId) : null;
+  const s = {
+    urgency: parseInt(document.getElementById('sub-slider-urgency').value),
+    difficulty: parseInt(document.getElementById('sub-slider-difficulty').value),
+    impact: parseInt(document.getElementById('sub-slider-impact').value),
+  };
+  refreshSubScore(s, parentTask);
+}
+
+function refreshSubScore(s, parentTask){
+  const score = calcSubScore(s, parentTask);
+  document.getElementById('sub-live-score').textContent = score;
+  const bar = document.getElementById('sub-live-score-bar');
+  bar.style.width = score+'%';
+  bar.style.background = score>=70?'var(--green)':score>=40?'var(--yellow)':'var(--red)';
+}
+
+function findNextDayWithSpace(mins){
+  for(let i=0;i<=30;i++){
+    const d = new Date(); d.setDate(d.getDate()+i);
+    const ds = d.toISOString().split('T')[0];
+    const cap = getDayCapacityMins(d.getDay());
+    const load = getDayLoad(ds);
+    if(cap>0 && cap-load>=mins) return ds;
+  }
+  return null;
+}
+
+function getMaxDayCap(){
+  const schedule = getWeeklySchedule();
+  return Math.max(...schedule.map(d=>d.mins||0));
+}
+
+function renderSubSuggestedDay(idx, parentTask){
+  const el = document.getElementById('sub-suggested-day');
+  if(!el) return;
+  const s = modalSubtasks[idx];
+  const mins = s.mins||20;
+  const maxCap = getMaxDayCap();
+
+  // CRITICAL CHECK: subtask alone exceeds max day capacity
+  if(mins > maxCap && maxCap > 0){
+    el.innerHTML = `
+      <div style="background:rgba(200,0,42,0.08);border:2px solid rgba(200,0,42,0.35);border-radius:var(--radius-sm);padding:14px;">
+        <div style="font-size:0.78rem;font-weight:900;color:var(--red);margin-bottom:6px;">🚨 Subtarea demasiado larga</div>
+        <div style="font-size:0.72rem;color:var(--text-muted);line-height:1.5;">
+          Esta subtarea necesita <strong>${mins}min</strong> pero tu día con más disponibilidad solo tiene <strong>${maxCap}min</strong>.<br>
+          💡 Divide esta subtarea en partes más pequeñas de menos de ${maxCap}min.
+        </div>
+        <div style="margin-top:10px;">
+          <label style="font-size:0.65rem;font-weight:800;color:var(--text-muted);display:block;margin-bottom:4px;">⏱ AJUSTAR DURACIÓN (min)</label>
+          <input type="number" id="sub-mins-input" value="${s.mins||''}" placeholder="ej: 25" min="1" max="480"
+            oninput="recheckSubCapacity(${idx})"
+            style="width:100%;height:40px;border:2px solid var(--red);border-radius:8px;text-align:center;font-family:'Nunito',sans-serif;font-weight:900;font-size:0.95rem;background:var(--bg);color:var(--text);">
+        </div>
+      </div>`;
+    return;
+  }
+
+  const suggested = findNextDayWithSpace(mins);
+
+  // Check if chosen date (s.date) has enough space
+  let chosenDateWarning = '';
+  if(s.date){
+    const d = new Date(s.date+'T12:00:00');
+    const cap = getDayCapacityMins(d.getDay());
+    const load = getDayLoad(s.date);
+    const free = cap - load;
+    if(mins > cap){
+      chosenDateWarning = `<div style="background:rgba(200,0,42,0.08);border:1.5px solid rgba(200,0,42,0.3);border-radius:8px;padding:8px;margin-bottom:10px;font-size:0.72rem;color:var(--red);font-weight:700;">
+        🚨 ${formatDate(s.date)}: necesitas ${mins}min pero ese día solo tiene ${cap}min de capacidad total.
+      </div>`;
+    } else if(mins > free){
+      const nextFit = findNextDayWithSpace(mins);
+      chosenDateWarning = `<div style="background:rgba(176,120,0,0.08);border:1.5px solid rgba(176,120,0,0.3);border-radius:8px;padding:8px;margin-bottom:10px;font-size:0.72rem;color:var(--yellow);font-weight:700;">
+        ⚠️ ${formatDate(s.date)}: solo quedan ${free}min libres, pero esta subtarea necesita ${mins}min.
+        ${nextFit?`<br><span style="color:var(--accent);cursor:pointer;text-decoration:underline;" onclick="document.getElementById('sub-date-native-modal').value='${nextFit}';document.getElementById('sub-date-display-modal').value='${formatDate(nextFit)}'">→ Usar ${formatDate(nextFit)} en su lugar</span>`:''}
+      </div>`;
+    }
+  }
+
+  el.innerHTML = `
+    <div style="background:rgba(79,63,240,0.06);border:2px solid rgba(79,63,240,0.2);border-radius:var(--radius-sm);padding:12px;">
+      ${chosenDateWarning}
+      <div style="font-size:0.7rem;font-weight:900;color:var(--accent);margin-bottom:8px;">
+        ${s.date ? '📅 Fecha asignada' : '💡 Día sugerido por el sistema'}
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <div style="flex:1;">
+          <label style="font-size:0.65rem;font-weight:800;color:var(--text-muted);display:block;margin-bottom:4px;">⏱ DURACIÓN (min)</label>
+          <input type="number" id="sub-mins-input" value="${s.mins||''}" placeholder="ej: 25" min="1" max="480"
+            oninput="recheckSubCapacity(${idx})"
+            style="width:100%;height:40px;border:2px solid var(--border);border-radius:8px;text-align:center;font-family:'Nunito',sans-serif;font-weight:900;font-size:0.95rem;background:var(--bg);color:var(--text);">
+        </div>
+        <div style="flex:1;">
+          <label style="font-size:0.65rem;font-weight:800;color:var(--text-muted);display:block;margin-bottom:4px;">📅 FECHA</label>
+          <div style="position:relative;">
+            <input type="date" id="sub-date-native-modal" value="${s.date||suggested||''}"
+              style="position:absolute;opacity:0;width:100%;height:100%;top:0;left:0;z-index:2;cursor:pointer;"
+              onchange="onSubDateModalChange(this.value,${idx})">
+            <input type="text" id="sub-date-display-modal"
+              value="${s.date?formatDate(s.date):suggested?formatDate(suggested):''}"
+              placeholder="DD/MM/AA"
+              onclick="document.getElementById('sub-date-native-modal').showPicker?document.getElementById('sub-date-native-modal').showPicker():document.getElementById('sub-date-native-modal').click()"
+              style="width:100%;height:40px;border:2px solid var(--border);border-radius:8px;text-align:center;font-family:'Nunito',sans-serif;font-weight:700;font-size:0.82rem;background:var(--bg);color:var(--text);cursor:pointer;">
+          </div>
+        </div>
+      </div>
+      ${suggested&&!s.date?`<div style="font-size:0.68rem;color:var(--text-muted);">Próximo día con ${mins}min libres: <strong>${formatDate(suggested)}</strong></div>`:''}
+    </div>`;
+}
+
+function onSubDateModalChange(isoVal, idx){
+  document.getElementById('sub-date-display-modal').value = isoVal ? formatDate(isoVal) : '';
+  // Live recheck capacity for chosen date
+  const mins = parseInt(document.getElementById('sub-mins-input')?.value)||modalSubtasks[idx]?.mins||20;
+  if(!isoVal) return;
+  const d = new Date(isoVal+'T12:00:00');
+  const cap = getDayCapacityMins(d.getDay());
+  const load = getDayLoad(isoVal);
+  const free = cap - load;
+  const capWarnEl = document.getElementById('sub-cap-inline-warn');
+  if(capWarnEl){
+    if(mins>cap){
+      capWarnEl.textContent = `🚨 ${mins}min > capacidad total del día (${cap}min)`;
+      capWarnEl.style.color='var(--red)';
+    } else if(mins>free){
+      capWarnEl.textContent = `⚠️ Solo hay ${free}min libres ese día`;
+      capWarnEl.style.color='var(--yellow)';
+    } else {
+      capWarnEl.textContent = `✓ Cabe — ${free}min libres ese día`;
+      capWarnEl.style.color='var(--green)';
+    }
+    capWarnEl.style.display='block';
+  }
+}
+
+function recheckSubCapacity(idx){
+  const mins = parseInt(document.getElementById('sub-mins-input')?.value)||0;
+  if(!mins) return;
+  const maxCap = getMaxDayCap();
+  const minsInput = document.getElementById('sub-mins-input');
+  if(mins>maxCap&&maxCap>0){
+    minsInput.style.borderColor='var(--red)';
+  } else {
+    minsInput.style.borderColor='var(--border)';
+    // Also check against chosen date
+    const dateNative = document.getElementById('sub-date-native-modal');
+    if(dateNative?.value) onSubDateModalChange(dateNative.value, idx);
+  }
+}
+
+function saveSubtaskPriority(){
+  if(editingSubIdx===null) return;
+  const s = modalSubtasks[editingSubIdx];
+  s.urgency = parseInt(document.getElementById('sub-slider-urgency').value)||3;
+  s.difficulty = parseInt(document.getElementById('sub-slider-difficulty').value)||3;
+  s.impact = parseInt(document.getElementById('sub-slider-impact').value)||3;
+  const minsInp = document.getElementById('sub-mins-input');
+  if(minsInp) s.mins = parseInt(minsInp.value)||null;
+  const dateNative = document.getElementById('sub-date-native-modal');
+  if(dateNative) s.date = dateNative.value||null;
+  closeModal('modal-subtask-priority');
+  editingSubIdx = null;
+  renderModalSubtasks();
 }
 
 function toggleModalSubtask(i){
@@ -1086,7 +1530,26 @@ function renderProjectDetail(projId){
     const group = tasks.filter(t=>t.status===status).sort((a,b)=>b.score-a.score);
     if(!group.length) return;
     html += `<div class="section-label" style="margin-top:14px;">${label} (${group.length})</div>`;
-    html += group.map(t=>taskCardHTML(t, p)).join('');
+    html += group.map(t=>{
+      const taskHtml = taskCardHTML(t, p);
+      // Show subtasks inline in project detail
+      const subs = (t.subtasks||[]);
+      if(!subs.length) return taskHtml;
+      const subHtml = subs.map(s=>{
+        const done = s.done;
+        const scoreColor = '#666';
+        return `<div style="display:flex;align-items:center;gap:8px;padding:6px 10px 6px 46px;border-bottom:1px solid var(--border);">
+          <button class="subtask-check ${done?'checked':''}" onclick="toggleSubtaskDoneInProject('${t.id}','${s.id}',this)" style="width:18px;height:18px;font-size:0.55rem;flex-shrink:0;">${done?'✓':''}</button>
+          <span style="flex:1;font-size:0.8rem;font-weight:600;${done?'text-decoration:line-through;color:var(--text-muted);':''}">${s.title}</span>
+          ${s.mins?`<span style="font-size:0.6rem;font-weight:700;color:var(--text-dim);">⏱${s.mins}m</span>`:''}
+          ${s.date?`<span style="font-size:0.6rem;font-weight:700;color:var(--accent);">📅${formatDate(s.date)}</span>`:''}
+        </div>`;
+      }).join('');
+      return `<div style="border:2px solid var(--border);border-radius:var(--radius);margin-bottom:8px;overflow:hidden;">
+        <div style="border:none;margin:0;border-radius:0;">${taskHtml.replace('margin-bottom:8px;','margin-bottom:0;').replace('class="task-card','class="task-card" style="border:none;border-radius:0;margin:0;').replace('<div class="task-card','<div class="task-card')}</div>
+        ${subHtml}
+      </div>`;
+    }).join('');
   });
   if(!tasks.length) html = `<div class="empty"><div class="empty-icon">✅</div><div class="empty-text">No hay tareas.<br>Agrega la primera.</div></div>`;
   document.getElementById('pd-task-list').innerHTML = html;
@@ -1164,6 +1627,9 @@ function renderDashboard(){
     t3el.innerHTML = top3.map(t=>taskCardHTML(t)).join('');
   }
 
+  // MI DÍA
+  renderMiDia();
+
   // TODAY CAPACITY BAR
   const todayStr = new Date().toISOString().split('T')[0];
   const todayJsDay = new Date().getDay();
@@ -1198,6 +1664,193 @@ function renderDashboard(){
   const deep = activeTasks.filter(t=>t.timeEstimate!=='QUICK');
   const del = document.getElementById('dash-deep');
   del.innerHTML = deep.length ? deep.map(t=>taskCardHTML(t)).join('') : `<div style="text-align:center;padding:16px;color:var(--text-dim);font-size:0.8rem;">Sin trabajo profundo pendiente</div>`;
+}
+
+// ===================== MI DÍA (dashboard) =====================
+function renderMiDia(){
+  const el = document.getElementById('mi-dia-list');
+  const sumEl = document.getElementById('mi-dia-summary');
+  if(!el) return;
+  const todayStr = new Date().toISOString().split('T')[0];
+  const items = getSubtasksForDay(todayStr, true);
+  const totalMins = items.reduce((s,i)=>s+(i.mins||0),0);
+  if(sumEl) sumEl.textContent = items.length>0 ? `${items.length} subtareas · ${totalMins}min · ordenadas por prioridad` : 'Sin subtareas asignadas para hoy';
+  if(!items.length){
+    el.innerHTML = `<div class="empty" style="padding:20px;"><div class="empty-icon" style="font-size:1.8rem;">📭</div><div class="empty-text" style="font-size:0.8rem;">Sin subtareas para hoy.<br>Asigna fechas a tus subtareas.</div></div>`;
+    return;
+  }
+  el.innerHTML = items.map(s=>agendaItemHTML(s, todayStr)).join('');
+}
+
+function agendaItemHTML(s, viewDateStr){
+  const proj = s.taskProject;
+  const projColor = proj?proj.color:'var(--border)';
+  const score = s.subScore||0;
+  const scoreColor = score>=70?'var(--green)':score>=40?'var(--yellow)':'var(--red)';
+  return `<div class="agenda-item ${s.isOverdue?'overdue':''} ${s.done?'done-item':''}">
+    <button class="agenda-check ${s.done?'checked':''}" onclick="toggleSubtaskDone('${s.taskId}','${s.id}',this)">
+      ${s.done?'✓':''}
+    </button>
+    <div class="agenda-item-body">
+      <div class="agenda-item-title ${s.done?'done':''}">${s.title}</div>
+      <div class="agenda-item-meta">
+        ${s.mins?`<span class="agenda-mins">⏱ ${s.mins}min</span>`:''}
+        ${score?`<span style="font-size:0.6rem;font-weight:900;background:${scoreColor}22;color:${scoreColor};padding:2px 7px;border-radius:20px;">${score}pts</span>`:''}
+        <span class="agenda-task-ref" style="border-left:3px solid ${projColor};padding-left:6px;">
+          ${proj?proj.emoji+' ':''} ${s.taskTitle}
+        </span>
+        ${s.isOverdue?`<span class="agenda-overdue-badge">⚠️ Vencida ${formatDate(s.date)}</span>`:''}
+      </div>
+    </div>
+  </div>`;
+}
+
+function toggleSubtaskDoneInProject(taskId, subtaskId, btn){
+  toggleSubtaskDone(taskId, subtaskId, btn);
+  if(currentProjectId) renderProjectDetail(currentProjectId);
+}
+
+function toggleSubtaskDone(taskId, subtaskId, btn){
+  const task = DB.tasks.find(t=>t.id===taskId);
+  if(!task) return;
+  const sub = (task.subtasks||[]).find(s=>s.id===subtaskId);
+  if(!sub) return;
+  sub.done = !sub.done;
+  saveDB();
+  if(sub.done && navigator.vibrate) navigator.vibrate(40);
+  if(sub.done) confettiBurst();
+  renderMiDia();
+  renderAgendaView();
+  renderDashboard();
+}
+
+// ===================== AGENDA VIEW =====================
+let agendaCurrentDate = new Date().toISOString().split('T')[0];
+const DAY_FULL_AGD = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+const MONTH_SHORT = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+function initAgendaView(){
+  agendaCurrentDate = new Date().toISOString().split('T')[0];
+  renderAgendaView();
+}
+
+function agendaChangeDay(delta){
+  const d = new Date(agendaCurrentDate+'T12:00:00');
+  d.setDate(d.getDate()+delta);
+  agendaCurrentDate = d.toISOString().split('T')[0];
+  renderAgendaView();
+}
+
+function renderAgendaView(){
+  const el = document.getElementById('agenda-list');
+  const titleEl = document.getElementById('agenda-day-title');
+  const dateEl = document.getElementById('agenda-day-date');
+  const capEl = document.getElementById('agenda-capacity-bar');
+  const pendEl = document.getElementById('agenda-pending-block');
+  if(!el) return;
+
+  const todayStr = new Date().toISOString().split('T')[0];
+  const isToday = agendaCurrentDate===todayStr;
+  const d = new Date(agendaCurrentDate+'T12:00:00');
+
+  // — WEEK STRIP —
+  renderWeekStrip();
+
+  // — HEADER —
+  titleEl.textContent = `${DAY_FULL_AGD[d.getDay()]}${isToday?' · HOY':''}`;
+  dateEl.textContent = formatDate(agendaCurrentDate);
+
+  // — CAPACITY BAR —
+  const cap = getDayCapacityMins(d.getDay());
+  const load = getDayLoad(agendaCurrentDate);
+  const pct = cap>0?Math.min(Math.round(load/cap*100),100):0;
+  const barColor = pct>=100?'var(--red)':pct>=80?'var(--yellow)':'var(--green)';
+  capEl.innerHTML = cap>0 ? `
+    <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+      <span style="font-size:0.7rem;font-weight:700;color:var(--text-muted);">⏰ Capacidad del día</span>
+      <span style="font-size:0.7rem;font-weight:900;color:${barColor};">${load}min / ${cap}min</span>
+    </div>
+    <div style="height:6px;background:#d0d0d0;border-radius:3px;overflow:hidden;border:1px solid #bbb;">
+      <div style="height:100%;width:${pct}%;background:${barColor};border-radius:3px;transition:width 0.4s;"></div>
+    </div>` : '';
+
+  // — PENDING TASKS (tasks with due=today but no subtask dates) —
+  const pendingTasks = DB.tasks.filter(t=>{
+    if(t.status==='DONE') return false;
+    const hasDue = t.due===agendaCurrentDate;
+    const hasSubDates = (t.subtasks||[]).some(s=>s.date);
+    return hasDue && !hasSubDates;
+  });
+  if(pendingTasks.length){
+    pendEl.innerHTML = `
+      <div style="font-size:0.65rem;font-weight:900;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">📌 Tareas del día</div>
+      ${pendingTasks.map(t=>{
+        const p = DB.projects.find(x=>x.id===t.projectId);
+        const timePill = {QUICK:'⚡',MEDIUM:'🎯',DEEP:'🧠'}[t.timeEstimate]||'⚡';
+        return `<div class="pending-task-item" onclick="openEditTask('${t.id}')">
+          <button class="task-check ${t.status==='DONE'?'checked':''}" onclick="toggleTaskDone('${t.id}',event)" style="width:22px;height:22px;font-size:0.65rem;">${t.status==='DONE'?'✓':''}</button>
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:700;font-size:0.88rem;">${t.title}</div>
+            <div style="font-size:0.65rem;color:var(--text-muted);margin-top:2px;">
+              ${p?`<span style="color:${p.color};font-weight:700;">${p.emoji} ${p.name}</span> · `:''}
+              ${timePill} ${t.totalMins?t.totalMins+'min':t.timeEstimate==='QUICK'?'20min':t.timeEstimate==='MEDIUM'?'45min':'90min'}
+            </div>
+          </div>
+        </div>`;
+      }).join('')}`;
+  } else { pendEl.innerHTML=''; }
+
+  // — SUBTASK LIST —
+  const items = getSubtasksForDay(agendaCurrentDate, isToday);
+  if(!items.length && !pendingTasks.length){
+    el.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">Sin tareas ni subtareas para este día.</div></div>`;
+    return;
+  }
+  if(items.length){
+    el.innerHTML = `<div style="font-size:0.65rem;font-weight:900;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">🔢 Subtareas programadas</div>`
+      + items.map(s=>agendaItemHTML(s, agendaCurrentDate)).join('');
+  } else { el.innerHTML=''; }
+}
+
+function renderWeekStrip(){
+  const strip = document.getElementById('agenda-week-strip');
+  if(!strip) return;
+  const today = new Date();
+  const todayStr = today.toISOString().split('T')[0];
+  // Show 14 days: 3 past + today + 10 future
+  const days = [];
+  for(let i=-3;i<=10;i++){
+    const d = new Date(today);
+    d.setDate(today.getDate()+i);
+    days.push(d);
+  }
+  const DAY_SHORT = ['Do','Lu','Ma','Mi','Ju','Vi','Sá'];
+  strip.innerHTML = days.map(d=>{
+    const ds = d.toISOString().split('T')[0];
+    const isToday = ds===todayStr;
+    const isActive = ds===agendaCurrentDate;
+    const load = getDayLoad(ds);
+    const cap = getDayCapacityMins(d.getDay());
+    const hasItems = DB.tasks.some(t=>(t.due===ds && t.status!=='DONE') || (t.subtasks||[]).some(s=>s.date===ds && !s.done));
+    const overloaded = cap>0 && load>cap;
+    let cls = 'week-day-btn';
+    if(isActive) cls+=' active';
+    if(isToday) cls+=' today-btn';
+    if(hasItems) cls+=' has-items';
+    if(overloaded) cls+=' overloaded';
+    const loadPct = cap>0?Math.min(Math.round(load/cap*100),100):0;
+    const loadColor = loadPct>=100?'#c8002a':loadPct>=80?'#b07800':'#0a8a4f';
+    return `<button class="${cls}" onclick="agendaCurrentDate='${ds}';renderAgendaView()">
+      <span class="week-day-name">${DAY_SHORT[d.getDay()]}</span>
+      <span class="week-day-num">${d.getDate()}</span>
+      ${load>0?`<span class="week-day-load" style="color:${isActive?'#fff':loadColor};">${load}m</span>`:'<span class="week-day-load" style="opacity:0.3;">—</span>'}
+    </button>`;
+  }).join('');
+  // Scroll active into view
+  setTimeout(()=>{
+    const active = strip.querySelector('.active');
+    if(active) active.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});
+  },50);
 }
 
 // ===================== WEEK LOAD =====================
@@ -1311,10 +1964,61 @@ function saveWeeklySchedule(){
 }
 
 function getDayLoad(dateStr){
-  // Sum minutes of all non-done tasks with due=dateStr
-  return DB.tasks
-    .filter(t=>t.status!=='DONE' && t.due===dateStr)
-    .reduce((sum,t)=>sum+(TIME_ESTIMATES[t.timeEstimate]||20),0);
+  let total = 0;
+  DB.tasks.filter(t=>t.status!=='DONE').forEach(t=>{
+    const subMins = (t.subtasks||[])
+      .filter(s=>!s.done && s.date===dateStr && s.mins)
+      .reduce((sum,s)=>sum+(s.mins||0),0);
+    if(subMins>0){
+      total += subMins;
+    } else if(t.due===dateStr){
+      total += t.totalMins || TIME_ESTIMATES[t.timeEstimate]||20;
+    }
+  });
+  return total;
+}
+
+// Returns {cap, load, free, pct, overloaded, exceedsCap} for any date+mins combo
+function checkDateCapacity(dateStr, mins, excludeSubtaskId){
+  const d = new Date(dateStr+'T12:00:00');
+  const cap = getDayCapacityMins(d.getDay());
+  let load = getDayLoad(dateStr);
+  // If editing existing subtask, subtract its own contribution
+  if(excludeSubtaskId){
+    DB.tasks.forEach(t=>{
+      const sub = (t.subtasks||[]).find(s=>s.id===excludeSubtaskId&&s.date===dateStr);
+      if(sub) load -= (sub.mins||0);
+    });
+  }
+  const free = cap - load;
+  const total = load + mins;
+  const pct = cap>0?Math.round(total/cap*100):0;
+  return {cap, load, free, total, pct,
+    overloaded: total>cap,
+    exceedsCap: mins>cap,
+    fits: mins<=free};
+}
+
+function getSubtasksForDay(dateStr, includeOverdue){
+  const result = [];
+  DB.tasks.forEach(t=>{
+    const parentScore = calcScore(t);
+    (t.subtasks||[]).forEach(s=>{
+      if(s.done) return;
+      const isToday = s.date===dateStr;
+      const isOverdue = includeOverdue && s.date && s.date<dateStr;
+      if(isToday || isOverdue){
+        const subScore = calcSubScore(s, t);
+        result.push({...s, taskId:t.id, taskTitle:t.title, taskProject:DB.projects.find(p=>p.id===t.projectId), isOverdue: s.date<dateStr, subScore});
+      }
+    });
+  });
+  return result.sort((a,b)=>{
+    // Overdue first, then by subScore desc
+    if(a.isOverdue && !b.isOverdue) return -1;
+    if(!a.isOverdue && b.isOverdue) return 1;
+    return (b.subScore||0)-(a.subScore||0);
+  });
 }
 
 function getDayCapacityMins(jsDay){ // jsDay: 0=Sun..6=Sat → convert to Mon=0
@@ -1336,19 +2040,41 @@ function getNextAvailableDay(fromDateStr){
   return null;
 }
 
+function getTaskMins(t){
+  // Real minutes: sum subtask mins if available, else use time estimate
+  const subTotal = (t.subtasks||[]).reduce((s,x)=>s+(x.mins||0),0);
+  return subTotal || t.totalMins || TIME_ESTIMATES[t.timeEstimate]||20;
+}
+
 function checkDayOverload(dateStr, excludeTaskId){
   if(!dateStr) return null;
   const d = new Date(dateStr+'T12:00:00');
   const cap = getDayCapacityMins(d.getDay());
-  const load = DB.tasks
-    .filter(t=>t.status!=='DONE' && t.due===dateStr && t.id!==excludeTaskId)
-    .reduce((sum,t)=>sum+(TIME_ESTIMATES[t.timeEstimate]||20),0);
-  // Add current task being edited
+  if(cap===0) return null;
+  const load = getDayLoad(dateStr); // already excludes done tasks
+
+  // Current task being added/edited
+  const subTotalMins = modalSubtasks.reduce((s,x)=>s+(x.mins||0),0);
   const tBtn = document.querySelector('.toggle-btn.active');
-  const curEst = tBtn ? TIME_ESTIMATES[tBtn.dataset.time]||20 : 20;
-  const total = load + curEst;
-  const pct = Math.round(total/cap*100);
-  return {cap, load, total, pct, overloaded: total>cap};
+  const curEst = subTotalMins || (tBtn ? TIME_ESTIMATES[tBtn.dataset.time]||20 : 20);
+
+  // Subtract excluded task's contribution if editing
+  let excludedMins = 0;
+  if(excludeTaskId){
+    const excT = DB.tasks.find(t=>t.id===excludeTaskId);
+    if(excT && excT.due===dateStr) excludedMins = getTaskMins(excT);
+  }
+
+  const total = load - excludedMins + curEst;
+  const pct = cap>0 ? Math.round(total/cap*100) : 0;
+
+  // KEY NEW CHECK: does this single task exceed full day capacity?
+  const exceedsDayAlone = curEst > cap;
+
+  return {cap, load: load-excludedMins, total, pct,
+    overloaded: total>cap,
+    exceedsDayAlone,
+    curEst};
 }
 
 function renderSettings(){
