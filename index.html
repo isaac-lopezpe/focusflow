@@ -247,6 +247,49 @@ input[type=range]::-webkit-slider-thumb{
 .collapsible-body{overflow:hidden;transition:max-height 0.3s ease;}
 .collapsible-body.collapsed{max-height:0;}
 
+/* GANTT */
+.gantt-row{
+  display:flex;align-items:center;gap:0;
+  background:var(--card);border:2px solid var(--border);
+  border-radius:var(--radius-sm);margin-bottom:6px;
+  overflow:hidden;cursor:grab;user-select:none;
+  transition:box-shadow 0.15s;
+}
+.gantt-row:active{cursor:grabbing;}
+.gantt-row.dragging{opacity:0.4;transform:scale(0.98);}
+.gantt-row.drag-over-top{border-top:3px solid var(--accent);}
+.gantt-row.drag-over-bottom{border-bottom:3px solid var(--accent);}
+.gantt-left{padding:10px 12px;flex-shrink:0;width:44%;}
+.gantt-title{font-weight:800;font-size:0.82rem;line-height:1.3;margin-bottom:3px;}
+.gantt-meta{display:flex;flex-wrap:wrap;gap:4px;align-items:center;}
+.gantt-right{flex:1;padding:10px 10px 10px 0;display:flex;flex-direction:column;gap:4px;}
+.gantt-bar-track{height:12px;background:var(--bg);border-radius:6px;overflow:hidden;border:1px solid var(--border);}
+.gantt-bar-fill{height:100%;border-radius:6px;transition:width 0.4s;}
+.gantt-sub-row{display:flex;align-items:center;gap:6px;padding:0 0 0 12px;}
+.gantt-sub-bar-track{flex:1;height:6px;background:var(--bg);border-radius:3px;overflow:hidden;border:1px solid var(--border);}
+.gantt-sub-bar-fill{height:100%;border-radius:3px;opacity:0.7;}
+.gantt-drag-handle{padding:10px 8px;color:var(--text-dim);font-size:1rem;flex-shrink:0;cursor:grab;}
+
+/* PROJECT CARD v2 */
+.proj-card-v2{
+  background:var(--card);border:2px solid var(--border);
+  border-radius:var(--radius);padding:14px;margin-bottom:10px;
+  cursor:pointer;transition:var(--transition);
+}
+.proj-card-v2:active{background:var(--surface);}
+.proj-card-v2-header{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.proj-emoji-v2{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+.proj-card-v2-stats{display:flex;gap:6px;flex-wrap:wrap;}
+.stat-chip{padding:3px 10px;border-radius:20px;font-size:0.62rem;font-weight:800;border:1.5px solid;}
+
+/* GLOBAL STAT CHIP */
+.global-stat{
+  flex-shrink:0;background:var(--card);border:2px solid var(--border);
+  border-radius:var(--radius-sm);padding:10px 14px;text-align:center;min-width:80px;
+}
+.global-stat-num{font-family:'Nunito',sans-serif;font-size:1.4rem;font-weight:900;line-height:1;}
+.global-stat-label{font-size:0.55rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;margin-top:2px;}
+
 /* MATRIX */
 .matrix-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
 .matrix-quadrant{background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:12px;min-height:140px;}
@@ -471,24 +514,60 @@ input[type=range]::-webkit-slider-thumb{
     </div>
 
     <!-- PROJECTS -->
-    <div class="view" id="view-projects">
-      <div id="project-list-view">
-        <div class="section-label">MIS PROYECTOS</div>
+    <div class="view" id="view-projects" style="padding:0;">
+
+      <!-- LIST VIEW -->
+      <div id="project-list-view" style="padding:16px 16px 0;">
+
+        <!-- GLOBAL STATS BAR -->
+        <div id="global-stats-bar" style="display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px;"></div>
+
+        <!-- SECTION LABEL + ADD -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div class="section-label" style="margin:0;">MIS PROYECTOS</div>
+          <button onclick="openModal('modal-add-project')"
+            style="background:var(--border);color:#fff;border:none;border-radius:var(--radius-xs);padding:5px 12px;font-family:'Nunito',sans-serif;font-size:0.72rem;font-weight:800;cursor:pointer;">
+            ＋ Proyecto
+          </button>
+        </div>
+
+        <!-- PROJECTS LIST -->
         <div id="projects-grid"></div>
-        <button class="btn btn-secondary" onclick="openModal('modal-add-project')" style="margin-top:4px;">
-          ＋ Nuevo proyecto
-        </button>
+
+        <!-- GANTT SECTION -->
+        <div style="margin-top:16px;margin-bottom:4px;">
+          <div class="section-label">📊 GANTT — ORDEN DE TAREAS</div>
+          <div style="font-size:0.65rem;color:var(--text-muted);margin-bottom:10px;">Arrastra para reordenar. La barra muestra la duración estimada.</div>
+          <div id="gantt-view"></div>
+        </div>
       </div>
-      <div id="project-detail-view" style="display:none;">
+
+      <!-- DETAIL VIEW -->
+      <div id="project-detail-view" style="display:none;padding:16px 16px 0;">
         <div class="detail-header">
           <button class="back-btn" onclick="showProjectList()">←</button>
-          <div>
-            <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:1rem;" id="pd-title"></div>
-            <div style="font-size:0.6rem;color:var(--text-muted);" id="pd-subtitle"></div>
+          <div style="flex:1;">
+            <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:1rem;" id="pd-title"></div>
+            <div style="font-size:0.65rem;color:var(--text-muted);" id="pd-subtitle"></div>
           </div>
+          <button onclick="openEditProject(currentProjectId,null)"
+            style="background:none;border:1.5px solid var(--border);border-radius:var(--radius-xs);width:32px;height:32px;cursor:pointer;font-size:0.85rem;">✏️</button>
+          <button onclick="openAddTaskForProject()"
+            style="background:var(--border);color:#fff;border:none;border-radius:var(--radius-xs);padding:0 12px;height:32px;font-family:'Nunito',sans-serif;font-size:0.75rem;font-weight:800;cursor:pointer;">＋ Tarea</button>
         </div>
+
+        <!-- PROJECT STATS -->
+        <div id="pd-stats" style="display:flex;gap:6px;margin-bottom:14px;"></div>
+
+        <!-- PROJECT GANTT -->
+        <div style="margin-bottom:10px;">
+          <div style="font-size:0.6rem;font-weight:900;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">📊 Orden de tareas — arrastra para reordenar</div>
+          <div id="pd-gantt"></div>
+        </div>
+
+        <!-- TASK LIST WITH SUBTASKS -->
+        <div class="section-label" style="margin-top:16px;">DETALLE DE TAREAS</div>
         <div id="pd-task-list"></div>
-        <button class="btn btn-primary" onclick="openAddTaskForProject()" style="margin-top:8px;">＋ Agregar tarea</button>
       </div>
     </div>
 
@@ -741,7 +820,7 @@ input[type=range]::-webkit-slider-thumb{
     <button class="nav-btn active" onclick="switchView('dash',this)">
       <span class="nav-icon">🏠</span><span class="nav-label">Hoy</span>
     </button>
-    <button class="nav-btn" onclick="switchView('projects',this)">
+    <button class="nav-btn" onclick="switchView('projects',this);showProjectList()">
       <span class="nav-icon">📁</span><span class="nav-label">Proyectos</span>
     </button>
     <button class="nav-btn nav-add" onclick="openModal('modal-add-task')">
@@ -749,12 +828,6 @@ input[type=range]::-webkit-slider-thumb{
     </button>
     <button class="nav-btn" onclick="switchView('agenda',this);initAgendaView()">
       <span class="nav-icon">📋</span><span class="nav-label">Agenda</span>
-    </button>
-    <button class="nav-btn" onclick="switchView('planweek',this);initPlanWeek()">
-      <span class="nav-icon">📆</span><span class="nav-label">Planificar</span>
-    </button>
-    <button class="nav-btn" onclick="switchView('calendar',this);initCalendar()">
-      <span class="nav-icon">📅</span><span class="nav-label">Calendar</span>
     </button>
     <button class="nav-btn" onclick="switchView('settings',this)">
       <span class="nav-icon">⚙️</span><span class="nav-label">Config</span>
@@ -1949,28 +2022,207 @@ function openEditProject(id, e){
 
 function renderProjects(){
   const pSel = document.getElementById('project-category');
-  pSel.innerHTML = DB.categories.map(c=>`<option value="${c.id}">${c.emoji} ${c.name}</option>`).join('');
+  pSel.innerHTML = DB.categories.map(cat=>`<option value="${cat.id}">${cat.emoji} ${cat.name}</option>`).join('');
+
+  // Global stats
+  const allTasks = DB.tasks;
+  const totalT = allTasks.length;
+  const doneT = allTasks.filter(t=>t.status==='DONE').length;
+  const pendT = totalT - doneT;
+  const allSubs = allTasks.flatMap(t=>t.subtasks||[]);
+  const totalS = allSubs.length;
+  const doneS = allSubs.filter(s=>s.done).length;
+  const statsEl = document.getElementById('global-stats-bar');
+  if(statsEl) statsEl.innerHTML = [
+    {num:DB.projects.length, label:'Proyectos', color:'var(--accent)'},
+    {num:totalT, label:'Tareas', color:'var(--text)'},
+    {num:doneT, label:'Completas', color:'var(--green)'},
+    {num:pendT, label:'Pendientes', color:'var(--yellow)'},
+    {num:totalS, label:'Subtareas', color:'var(--text-muted)'},
+  ].map(s=>`<div class="global-stat">
+    <div class="global-stat-num" style="color:${s.color};">${s.num}</div>
+    <div class="global-stat-label">${s.label}</div>
+  </div>`).join('');
 
   const el = document.getElementById('projects-grid');
   if(!DB.projects.length){
-    el.innerHTML = `<div class="empty"><div class="empty-icon">📁</div><div class="empty-text">Sin proyectos aún.<br>Crea tu primer proyecto.</div></div>`;
+    el.innerHTML = `<div class="empty"><div class="empty-icon">📁</div><div class="empty-text">Sin proyectos aún.</div></div>`;
+    renderGanttView([]);
     return;
   }
+
   el.innerHTML = DB.projects.map(p=>{
     const tasks = DB.tasks.filter(t=>t.projectId===p.id);
     const done = tasks.filter(t=>t.status==='DONE').length;
+    const inprog = tasks.filter(t=>t.status==='IN_PROGRESS').length;
+    const pend = tasks.filter(t=>t.status==='TODO').length;
     const pct = tasks.length ? Math.round(done/tasks.length*100) : 0;
-    return `<div class="project-card" onclick="renderProjectDetail('${p.id}')">
-      <div class="project-emoji" style="background:${p.color}22;">${p.emoji}</div>
-      <div class="project-info">
-        <div class="project-name">${p.name}</div>
-        <div class="project-stats">${tasks.length} tareas · ${pct}% completado</div>
-        <div class="progress-bar" style="margin-top:6px;"><div class="progress-fill" style="width:${pct}%;background:${p.color};"></div></div>
+    const totalMins = tasks.reduce((s,t)=>s+(t.totalMins||TIME_ESTIMATES[t.timeEstimate]||20),0);
+    const doneMins = tasks.filter(t=>t.status==='DONE').reduce((s,t)=>s+(t.totalMins||TIME_ESTIMATES[t.timeEstimate]||20),0);
+    return `<div class="proj-card-v2" onclick="renderProjectDetail('${p.id}')">
+      <div class="proj-card-v2-header">
+        <div class="proj-emoji-v2" style="background:${p.color}22;">${p.emoji}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:900;font-size:1rem;">${p.name}</div>
+          <div style="font-size:0.65rem;color:var(--text-muted);margin-top:2px;">${tasks.length} tareas · ${Math.round(totalMins/60*10)/10}h estimadas</div>
+        </div>
+        <button onclick="openEditProject('${p.id}',event)"
+          style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.85rem;padding:4px;flex-shrink:0;">✏️</button>
       </div>
-      <button onclick="openEditProject('${p.id}',event)" style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.9rem;padding:4px;">✏️</button>
-      <span class="project-arrow">›</span>
+      <!-- Progress bar -->
+      <div style="height:8px;background:var(--bg);border-radius:4px;overflow:hidden;border:1px solid var(--border);margin-bottom:8px;">
+        <div style="height:100%;width:${pct}%;background:${p.color};border-radius:4px;transition:width 0.5s;"></div>
+      </div>
+      <!-- Stats chips -->
+      <div class="proj-card-v2-stats">
+        ${pend?`<span class="stat-chip" style="color:var(--text-muted);border-color:var(--border);">📋 ${pend} pendientes</span>`:''}
+        ${inprog?`<span class="stat-chip" style="color:var(--accent);border-color:rgba(79,63,240,0.3);background:rgba(79,63,240,0.08);">⚡ ${inprog} en curso</span>`:''}
+        ${done?`<span class="stat-chip" style="color:var(--green);border-color:rgba(10,138,79,0.3);background:rgba(10,138,79,0.08);">✓ ${done} listas</span>`:''}
+        <span class="stat-chip" style="color:var(--text-dim);border-color:var(--border);">${pct}%</span>
+      </div>
     </div>`;
   }).join('');
+
+  // Render global Gantt
+  const allTasksSorted = DB.tasks
+    .filter(t=>t.status!=='DONE')
+    .map(t=>({...t, score:calcScore(t)}))
+    .sort((a,b)=>(a.ganttOrder??999)-(b.ganttOrder??999));
+  renderGanttView(allTasksSorted);
+}
+
+// ── GANTT VIEW ─────────────────────────────────────────────
+let ganttDragId = null;
+let ganttDragOver = null;
+
+function renderGanttView(tasks){
+  const el = document.getElementById('gantt-view');
+  if(!el) return;
+  if(!tasks.length){
+    el.innerHTML=`<div style="text-align:center;padding:20px;color:var(--text-dim);font-size:0.8rem;">Sin tareas pendientes</div>`;
+    return;
+  }
+  // Max mins for bar scaling
+  const maxMins = Math.max(...tasks.map(t=>t.totalMins||TIME_ESTIMATES[t.timeEstimate]||20),1);
+  el.innerHTML = tasks.map((t,i)=>{
+    const proj = DB.projects.find(p=>p.id===t.projectId);
+    const color = proj?.color||'#888';
+    const mins = t.totalMins||TIME_ESTIMATES[t.timeEstimate]||20;
+    const barPct = Math.max(8, Math.round(mins/maxMins*100));
+    const scoreColor = t.score>=70?'var(--green)':t.score>=40?'var(--yellow)':'var(--red)';
+    const subs = (t.subtasks||[]).filter(s=>!s.done);
+    const subMaxMins = subs.length ? Math.max(...subs.map(s=>s.mins||10),1) : 1;
+    return `<div class="gantt-row" draggable="true"
+      ondragstart="ganttDragStart(event,'${t.id}')"
+      ondragend="ganttDragEnd(event)"
+      ondragover="ganttDragOver(event,this,'${t.id}')"
+      ondragleave="ganttDragLeave(this)"
+      ondrop="ganttDrop(event,'${t.id}')">
+      <div class="gantt-drag-handle">⠿</div>
+      <div class="gantt-left">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+          <span style="font-size:0.55rem;font-weight:900;background:${scoreColor}22;color:${scoreColor};padding:1px 6px;border-radius:10px;border:1px solid ${scoreColor}44;">#${i+1} · ${t.score}pts</span>
+          ${proj?`<span style="font-size:0.55rem;font-weight:800;color:${color};">${proj.emoji}</span>`:''}
+        </div>
+        <div class="gantt-title">${t.title}</div>
+        <div class="gantt-meta">
+          <span style="font-size:0.6rem;color:var(--text-muted);font-weight:700;">⏱${mins}min</span>
+          ${t.due?`<span style="font-size:0.6rem;color:var(--red);font-weight:700;">🚨${formatDate(t.due)}</span>`:''}
+          ${subs.length?`<span style="font-size:0.6rem;color:var(--text-muted);">📋${subs.length}</span>`:''}
+        </div>
+      </div>
+      <div class="gantt-right">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div class="gantt-bar-track" style="flex:1;">
+            <div class="gantt-bar-fill" style="width:${barPct}%;background:${color};"></div>
+          </div>
+          <button onclick="quickStartPomo('${t.id}',event)"
+            style="background:var(--border);color:#fff;border:none;border-radius:6px;padding:3px 8px;font-family:'Nunito',sans-serif;font-size:0.65rem;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0;">▶ Pomo</button>
+        </div>
+        ${subs.slice(0,3).map(s=>{
+          const sMins=s.mins||10;
+          const sPct=Math.max(5,Math.round(sMins/subMaxMins*100));
+          return `<div class="gantt-sub-row">
+            <button class="subtask-check ${s.done?'checked':''}" style="width:16px;height:16px;font-size:0.5rem;flex-shrink:0;"
+              onclick="toggleSubInGantt('${t.id}','${s.id}',event)">${s.done?'✓':''}</button>
+            <span style="font-size:0.62rem;font-weight:600;color:var(--text-muted);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;">${s.title}</span>
+            <div class="gantt-sub-bar-track" style="width:60px;flex-shrink:0;">
+              <div class="gantt-sub-bar-fill" style="width:${sPct}%;background:${color};"></div>
+            </div>
+          </div>`;
+        }).join('')}
+        ${subs.length>3?`<div style="font-size:0.55rem;color:var(--text-dim);padding-left:22px;">+${subs.length-3} más...</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function ganttDragStart(e, id){
+  ganttDragId=id;
+  e.dataTransfer.effectAllowed='move';
+  setTimeout(()=>e.target.classList.add('dragging'),0);
+}
+function ganttDragEnd(e){
+  e.target.classList.remove('dragging');
+  document.querySelectorAll('.gantt-row').forEach(r=>{
+    r.classList.remove('drag-over-top','drag-over-bottom');
+  });
+}
+function ganttDragOver(e, el, id){
+  e.preventDefault();
+  if(id===ganttDragId) return;
+  const rect=el.getBoundingClientRect();
+  const mid=rect.top+rect.height/2;
+  document.querySelectorAll('.gantt-row').forEach(r=>r.classList.remove('drag-over-top','drag-over-bottom'));
+  el.classList.add(e.clientY<mid?'drag-over-top':'drag-over-bottom');
+  ganttDragOver=id;
+}
+function ganttDragLeave(el){ el.classList.remove('drag-over-top','drag-over-bottom'); }
+function ganttDrop(e, targetId){
+  e.preventDefault();
+  if(!ganttDragId||ganttDragId===targetId) return;
+  // Reorder: assign ganttOrder based on current order then insert
+  const pendingTasks = DB.tasks.filter(t=>t.status!=='DONE')
+    .sort((a,b)=>(a.ganttOrder??999)-(b.ganttOrder??999));
+  const dragIdx = pendingTasks.findIndex(t=>t.id===ganttDragId);
+  const targetIdx = pendingTasks.findIndex(t=>t.id===targetId);
+  if(dragIdx===-1||targetIdx===-1) return;
+  const [dragged] = pendingTasks.splice(dragIdx,1);
+  // Determine insert position based on drag direction indicator
+  const targetEl = document.querySelector(`[ondrop*="${targetId}"]`);
+  const isAfter = targetEl?.classList.contains('drag-over-bottom');
+  pendingTasks.splice(isAfter?targetIdx:Math.max(0,targetIdx), 0, dragged);
+  pendingTasks.forEach((t,i)=>{
+    const dbT=DB.tasks.find(x=>x.id===t.id);
+    if(dbT) dbT.ganttOrder=i;
+  });
+  saveDB();
+  renderProjects();
+}
+
+function toggleSubInGantt(taskId, subId, e){
+  e.stopPropagation();
+  toggleSubtaskDone(taskId, subId, null);
+  renderProjects();
+}
+
+function quickStartPomo(taskId, e){
+  e.stopPropagation();
+  // Open pomo panel and pre-select first unfinished subtask of this task
+  const task = DB.tasks.find(t=>t.id===taskId);
+  if(!task) return;
+  if(!pomoPanelOpen) togglePomoPanel();
+  setTimeout(()=>{
+    populatePomoSubtasks();
+    const sel=document.getElementById('pomo-subtask-select');
+    if(sel){
+      // Find first unfinished subtask of this task
+      const sub=(task.subtasks||[]).find(s=>!s.done);
+      if(sub) sel.value=sub.id+'::'+taskId;
+      else sel.value='';
+      updatePomoSubtaskInfo();
+    }
+  },100);
 }
 
 function renderProjectDetail(projId){
@@ -1981,7 +2233,66 @@ function renderProjectDetail(projId){
   document.getElementById('project-detail-view').style.display='block';
   document.getElementById('pd-title').textContent = p.emoji+' '+p.name;
   const tasks = DB.tasks.filter(t=>t.projectId===projId);
-  document.getElementById('pd-subtitle').textContent = tasks.length+' tareas';
+  const done=tasks.filter(t=>t.status==='DONE').length;
+  const pend=tasks.filter(t=>t.status!=='DONE').length;
+  const totalMins=tasks.reduce((s,t)=>s+(t.totalMins||TIME_ESTIMATES[t.timeEstimate]||20),0);
+  document.getElementById('pd-subtitle').textContent = `${tasks.length} tareas · ${done} completas · ${Math.round(totalMins/60*10)/10}h total`;
+
+  // Project stats chips
+  const statsEl=document.getElementById('pd-stats');
+  if(statsEl) statsEl.innerHTML=[
+    {v:pend,l:'Pendientes',c:'var(--text-muted)',bg:'var(--bg)'},
+    {v:done,l:'Completas',c:'var(--green)',bg:'rgba(10,138,79,0.08)'},
+    {v:tasks.flatMap(t=>t.subtasks||[]).filter(s=>!s.done).length,l:'Subtareas',c:'var(--accent)',bg:'rgba(79,63,240,0.08)'},
+  ].map(s=>`<div style="flex:1;text-align:center;padding:8px;background:${s.bg};border:1.5px solid var(--border);border-radius:var(--radius-sm);">
+    <div style="font-family:'Nunito',sans-serif;font-size:1.3rem;font-weight:900;color:${s.c};">${s.v}</div>
+    <div style="font-size:0.55rem;font-weight:800;color:var(--text-dim);text-transform:uppercase;">${s.l}</div>
+  </div>`).join('');
+
+  // Project Gantt
+  const pendingTasks=tasks.filter(t=>t.status!=='DONE')
+    .map(t=>({...t,score:calcScore(t)}))
+    .sort((a,b)=>(a.ganttOrder??999)-(b.ganttOrder??999));
+  const ganttEl=document.getElementById('pd-gantt');
+  if(ganttEl){
+    if(pendingTasks.length){
+      const maxMins=Math.max(...pendingTasks.map(t=>t.totalMins||TIME_ESTIMATES[t.timeEstimate]||20),1);
+      ganttEl.innerHTML=pendingTasks.map((t,i)=>{
+        const mins=t.totalMins||TIME_ESTIMATES[t.timeEstimate]||20;
+        const barPct=Math.max(8,Math.round(mins/maxMins*100));
+        const scoreColor=t.score>=70?'var(--green)':t.score>=40?'var(--yellow)':'var(--red)';
+        const subs=(t.subtasks||[]).filter(s=>!s.done);
+        return `<div class="gantt-row" draggable="true"
+          ondragstart="ganttDragStart(event,'${t.id}')"
+          ondragend="ganttDragEnd(event)"
+          ondragover="ganttDragOver(event,this,'${t.id}')"
+          ondragleave="ganttDragLeave(this)"
+          ondrop="ganttDrop(event,'${t.id}')">
+          <div class="gantt-drag-handle">⠿</div>
+          <div class="gantt-left">
+            <div style="font-size:0.55rem;font-weight:900;color:${scoreColor};margin-bottom:2px;">#${i+1} · ${t.score}pts</div>
+            <div class="gantt-title">${t.title}</div>
+            <div class="gantt-meta">
+              <span style="font-size:0.6rem;color:var(--text-muted);">⏱${mins}min</span>
+              ${t.due?`<span style="font-size:0.6rem;color:var(--red);">🚨${formatDate(t.due)}</span>`:''}
+              ${subs.length?`<span style="font-size:0.6rem;color:var(--text-muted);">📋${subs.length}</span>`:''}
+            </div>
+          </div>
+          <div class="gantt-right">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <div class="gantt-bar-track" style="flex:1;">
+                <div class="gantt-bar-fill" style="width:${barPct}%;background:${p.color};"></div>
+              </div>
+              <button onclick="quickStartPomo('${t.id}',event)"
+                style="background:var(--border);color:#fff;border:none;border-radius:6px;padding:3px 8px;font-family:'Nunito',sans-serif;font-size:0.65rem;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0;">▶ Pomo</button>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    } else {
+      ganttEl.innerHTML=`<div style="text-align:center;padding:16px;color:var(--text-dim);font-size:0.8rem;">¡Todas las tareas completadas! 🎉</div>`;
+    }
+  }
 
   const groups = {TODO:'Por hacer',IN_PROGRESS:'En progreso',DONE:'Completadas'};
   let html = '';
