@@ -1480,14 +1480,21 @@ function selectPriority(btn){
 }
 
 function renderAssignees(selected){
-  const el = document.getElementById('assignee-group');
+  var el = document.getElementById('assignee-group');
   if(!el) return;
-  el.innerHTML = ASSIGNEES.map(a =>
-    '<button class="assignee-btn'+(a.id===(selected||'Isaac')?' active':'=')+'" '
-    +'onclick="selectAssignee(this,''+a.id+'')">'
-    +a.emoji+' '+a.name+'</button>'
-  ).join('');
-  document.getElementById('task-assignee').value = selected||'Isaac';
+  var sel = selected||'Isaac';
+  var parts = [];
+  ASSIGNEES.forEach(function(a){
+    var isActive = (a.id===sel) ? ' active' : '';
+    parts.push('<button class="assignee-btn'+isActive+'" data-aid="'+a.id+'" onclick="handleAssigneeClick(this)">'+a.emoji+' '+a.name+'</button>');
+  });
+  el.innerHTML = parts.join('');
+  var hiddenEl = document.getElementById('task-assignee');
+  if(hiddenEl) hiddenEl.value = sel;
+}
+
+function handleAssigneeClick(btn){
+  selectAssignee(btn, btn.getAttribute('data-aid'));
 }
 
 function selectAssignee(btn, id){
