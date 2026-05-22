@@ -670,7 +670,7 @@ function renderProjList(){
     if(pending.length>2) preview+='<div style="font-size:0.65rem;color:var(--dim);">+'+(pending.length-2)+' más...</div>';
 
     html+='<div style="background:var(--s1);border:2px solid var(--border);border-radius:var(--r);margin-bottom:8px;overflow:hidden;">'
-      +'<div style="display:flex;align-items:center;gap:10px;padding:14px;cursor:pointer;" onclick="openProjDetail(''+p.id+'')">'
+      +'<div style="display:flex;align-items:center;gap:10px;padding:14px;cursor:pointer;" data-pid="'+p.id+'" onclick="openProjDetail(this.dataset.pid)">' 
       +'<div style="width:40px;height:40px;border-radius:10px;background:'+p.color+'22;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">'+p.emoji+'</div>'
       +'<div style="flex:1;min-width:0;">'
       +'<div style="font-weight:700;font-size:0.95rem;">'+p.name+'</div>'
@@ -679,8 +679,8 @@ function renderProjList(){
       +(preview?'<div style="margin-top:6px;padding:5px 8px;background:var(--bg);border-radius:4px;">'+preview+'</div>':'')
       +'</div>'
       +'<div style="display:flex;flex-direction:column;gap:3px;flex-shrink:0;">'
-      +'<button style="width:26px;height:26px;border-radius:4px;border:1.5px solid var(--border);background:var(--s2);color:var(--muted);cursor:pointer;font-size:0.75rem;" onclick="event.stopPropagation();moveProj(''+p.id+'',-1)">↑</button>'
-      +'<button style="width:26px;height:26px;border-radius:4px;border:1.5px solid var(--border);background:var(--s2);color:var(--muted);cursor:pointer;font-size:0.75rem;" onclick="event.stopPropagation();moveProj(''+p.id+'',1)">↓</button>'
+      +'<button style="width:26px;height:26px;border-radius:4px;border:1.5px solid var(--border);background:var(--s2);color:var(--muted);cursor:pointer;font-size:0.75rem;" data-mpid="'+ p.id +'" onclick="event.stopPropagation();moveProj(this.dataset.mpid,-1)">↑</button>'
+      +'<button style="width:26px;height:26px;border-radius:4px;border:1.5px solid var(--border);background:var(--s2);color:var(--muted);cursor:pointer;font-size:0.75rem;" data-mpid2="'+ p.id +'" onclick="event.stopPropagation();moveProj(this.dataset.mpid2,1)">↓</button>'
       +'</div>'
       +'<div style="color:var(--muted);font-size:1.1rem;padding-left:4px;">›</div>'
       +'</div>'
@@ -747,9 +747,9 @@ function renderProjDetail(){
     html+='<div style="background:var(--s1);border:2px solid '+borderColor+';border-radius:var(--r);margin-bottom:8px;overflow:hidden;">';
 
     // Task header — tap to expand/collapse
-    html+='<div style="display:flex;align-items:center;gap:8px;padding:12px;cursor:pointer;" onclick="toggleTaskExpand(''+t.id+'')">'
+    html+='<div style="display:flex;align-items:center;gap:8px;padding:12px;cursor:pointer;" data-te="'+t.id+'" onclick="toggleTaskExpand(this.dataset.te)">'
       +'<span style="width:22px;height:22px;border-radius:50%;background:var(--s2);border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;color:var(--muted);flex-shrink:0;">'+(i+1)+'</span>'
-      +'<button class="task-check'+(isDone?' done':'')+'" onclick="event.stopPropagation();toggleTask(''+t.id+'');renderProjDetail();">'+(isDone?'✓':'')+'</button>'
+      +'<button class="task-check'+(isDone?' done':'')+'" data-tt3="'+t.id+'" onclick="event.stopPropagation();toggleTask(this.dataset.tt3);renderProjDetail();">'+(isDone?'✓':'')+'</button>'
       +'<div style="flex:1;min-width:0;">'
       +'<div style="font-size:0.9rem;font-weight:600;'+(isDone?'text-decoration:line-through;color:var(--muted);':'')+'">'+priDot+' '+t.title+'</div>'
       +'<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;">'
@@ -760,9 +760,9 @@ function renderProjDetail(){
       +'</div>'
       +'</div>'
       +'<div style="display:flex;gap:3px;flex-shrink:0;">'
-      +'<button class="order-btn" onclick="event.stopPropagation();moveTask(''+t.id+'',-1)">↑</button>'
-      +'<button class="order-btn" onclick="event.stopPropagation();moveTask(''+t.id+'',1)">↓</button>'
-      +'<button class="icon-btn" onclick="event.stopPropagation();openEditTask(''+t.id+'')">✏️</button>'
+      +'<button class="order-btn" data-mt="'+t.id+'" onclick="event.stopPropagation();moveTask(this.dataset.mt,-1)">↑</button>'
+      +'<button class="order-btn" data-mt2="'+t.id+'" onclick="event.stopPropagation();moveTask(this.dataset.mt2,1)">↓</button>'
+      +'<button class="icon-btn" data-et2="'+t.id+'" onclick="event.stopPropagation();openEditTask(this.dataset.et2)">✏️</button>'
       +'</div>'
       +'<span style="color:var(--muted);font-size:1rem;padding-left:4px;">'+(isExpanded?'▾':'›')+'</span>'
       +'</div>';
@@ -776,7 +776,7 @@ function renderProjDetail(){
       subs.forEach((s,si)=>{
         html+='<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--border);background:var(--bg);">'
           +'<span style="font-size:0.55rem;color:var(--dim);width:16px;text-align:right;flex-shrink:0;">'+(si+1)+'</span>'
-          +'<button class="sub-check'+(s.done?' done':'')+'" onclick="toggleSub(''+s.id+'');renderProjDetail();">'+(s.done?'✓':'')+'</button>'
+          +'<button class="sub-check'+(s.done?' done':'')+'" data-tsd="'+s.id+'" onclick="toggleSub(this.dataset.tsd);renderProjDetail();">'+(s.done?'✓':'')+'</button>'
           +'<div style="flex:1;min-width:0;">'
           +'<div style="font-size:0.82rem;font-weight:500;'+(s.done?'text-decoration:line-through;color:var(--muted);':'')+'">'+s.title+'</div>'
           +(s.due||s.mins||s.assignee?'<div style="font-size:0.6rem;color:var(--muted);margin-top:2px;">'
@@ -785,14 +785,14 @@ function renderProjDetail(){
             +(s.assignee&&s.assignee!=='Isaac'?'👤 '+s.assignee:'')
             +'</div>':'')
           +'</div>'
-          +'<button class="order-btn" onclick="moveSub(''+s.id+'',-1)">↑</button>'
-          +'<button class="order-btn" onclick="moveSub(''+s.id+'',1)">↓</button>'
-          +'<button class="icon-btn" onclick="openEditSub(''+s.id+'')">✏️</button>'
+          +'<button class="order-btn" data-ms="'+s.id+'" onclick="moveSub(this.dataset.ms,-1)">↑</button>'
+          +'<button class="order-btn" data-ms2="'+s.id+'" onclick="moveSub(this.dataset.ms2,1)">↓</button>'
+          +'<button class="icon-btn" data-es="'+s.id+'" onclick="openEditSub(this.dataset.es)">✏️</button>'
           +'</div>';
       });
       // Add subtask button
       html+='<div style="padding:8px 12px;background:var(--bg);">'
-        +'<button onclick="openAddSub(''+t.id+'')" style="width:100%;background:transparent;'
+        +'<button data-oas="'+t.id+'" onclick="openAddSub(this.dataset.oas)" style="width:100%;background:transparent;'
         +'border:2px dashed var(--accent);color:var(--accent2);'
         +'font-size:0.82rem;font-weight:700;cursor:pointer;font-family:inherit;'
         +'padding:10px;border-radius:8px;text-align:center;">'
@@ -804,7 +804,7 @@ function renderProjDetail(){
   });
 
   // ＋ Nueva tarea — always at bottom, prominent
-  html+='<button onclick="openAddTask(''+currentProjId+'')" '
+  html+='<button onclick="openAddTask(currentProjId)" '
     +'style="display:block;width:100%;margin-top:8px;background:var(--accent);border:none;color:#fff;'
     +'font-size:0.9rem;font-weight:700;cursor:pointer;font-family:inherit;'
     +'padding:14px;border-radius:var(--r);text-align:center;">'
@@ -814,7 +814,7 @@ function renderProjDetail(){
     html='<div style="text-align:center;padding:30px 20px;">'
       +'<div style="font-size:2rem;margin-bottom:8px;">📋</div>'
       +'<div style="color:var(--muted);margin-bottom:16px;">Sin tareas aún</div>'
-      +'<button class="btn btn-primary" onclick="openAddTask(''+currentProjId+'')">＋ Agregar primera tarea</button>'
+      +'<button class="btn btn-primary" onclick="openAddTask(currentProjId)">＋ Agregar primera tarea</button>'
       +'</div>';
   }
   document.getElementById('pd-tasks').innerHTML=html;
