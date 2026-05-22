@@ -7,27 +7,27 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #ebebeb;
-  --surface: #f5f5f5;
-  --card: #ffffff;
-  --card-raised: #fafafa;
-  --border: #1a1a1a;
-  --border-light: #333333;
-  --text: #111111;
-  --text-muted: #555555;
-  --text-dim: #888888;
-  --accent: #4f3ff0;
+  --bg: #0f0f0f;
+  --surface: #161616;
+  --card: #1e1e1e;
+  --card-raised: #252525;
+  --border: #333333;
+  --border-light: #444444;
+  --text: #f0f0f0;
+  --text-muted: #888888;
+  --text-dim: #555555;
+  --accent: #7c6aff;
   --accent-glow: rgba(79,63,240,0.15);
-  --accent2: #e0185e;
-  --green: #0a8a4f;
-  --yellow: #b07800;
-  --red: #c8002a;
-  --orange: #c04a00;
+  --accent2: #ff6a9e;
+  --green: #3effa0;
+  --yellow: #ffd95c;
+  --red: #ff5c7c;
+  --orange: #ff8c42;
   --radius: 18px;
   --radius-sm: 12px;
   --radius-xs: 8px;
-  --shadow: 0 2px 0px rgba(0,0,0,1), 0 4px 12px rgba(0,0,0,0.08);
-  --shadow-card: 2px 4px 0px rgba(0,0,0,0.9);
+  --shadow: 0 2px 12px rgba(0,0,0,0.4);
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.4);
   --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -57,7 +57,7 @@ h1,h2,h3,.brand{font-family:'Nunito',sans-serif;}
 /* BOTTOM NAV */
 .nav{
   position:fixed;bottom:0;left:0;width:100%;
-  background:rgba(235,235,235,0.97);
+  background:rgba(15,15,15,0.97);
   backdrop-filter:blur(24px) saturate(180%);
   -webkit-backdrop-filter:blur(24px) saturate(180%);
   border-top:2px solid var(--border);
@@ -73,8 +73,8 @@ h1,h2,h3,.brand{font-family:'Nunito',sans-serif;}
 }
 .nav-btn .nav-icon{font-size:1.1rem;line-height:1;}
 .nav-btn .nav-label{font-size:0.55rem;font-weight:800;text-transform:uppercase;letter-spacing:0.2px;line-height:1;}
-.nav-btn.active{color:var(--accent);background:rgba(79,63,240,0.1);}
-.nav-add{background:var(--border) !important;color:#fff !important;border-radius:var(--radius-sm);}
+.nav-btn.active{color:var(--accent);background:rgba(124,106,255,0.15);}
+.nav-add{background:var(--accent) !important;color:#fff !important;border-radius:var(--radius-sm);}
 .nav-add .nav-icon,.nav-add .nav-label{color:#fff !important;}
 
 /* VIEWS */
@@ -103,7 +103,7 @@ h1,h2,h3,.brand{font-family:'Nunito',sans-serif;}
 /* BUTTONS */
 .btn{width:100%;height:48px;border:none;border-radius:var(--radius-sm);font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;letter-spacing:0.3px;transition:var(--transition);display:flex;align-items:center;justify-content:center;gap:8px;}
 .btn:active{transform:scale(0.98);opacity:0.9;}
-.btn-primary{background:var(--border);color:#fff;}
+.btn-primary{background:var(--accent);color:#fff;}
 .btn-secondary{background:var(--card);color:var(--text);border:2px solid var(--border);}
 .btn-danger{background:rgba(200,0,42,0.08);color:var(--red);border:2px solid rgba(200,0,42,0.4);}
 .btn-sm{height:36px;font-size:0.75rem;}
@@ -148,7 +148,7 @@ h1,h2,h3,.brand{font-family:'Nunito',sans-serif;}
   display:flex;align-items:center;justify-content:center;
   transition:var(--transition);font-size:0.75rem;
 }
-.task-check.checked{background:var(--border);border-color:var(--border);color:#fff;}
+.task-check.checked{background:var(--green);border-color:var(--green);color:#000;}
 .task-card-body{flex:1;min-width:0;}
 .task-title{font-weight:700;font-size:1rem;line-height:1.45;margin-bottom:6px;}
 .task-title.done-text{text-decoration:line-through;color:var(--text-muted);}
@@ -178,10 +178,10 @@ input[type=range]::-webkit-slider-thumb{
   font-family:'Nunito',sans-serif;font-size:0.72rem;font-weight:700;
   transition:var(--transition);
 }
-.toggle-btn.active{border-color:var(--border);background:var(--border);color:#ffffff;}
+.toggle-btn.active{border-color:var(--accent);background:rgba(124,106,255,0.15);color:var(--accent);}
 
 /* PROGRESS BAR */
-.progress-bar{height:6px;background:#d0d0d0;border-radius:3px;overflow:hidden;margin:6px 0;border:1px solid #bbbbbb;}
+.progress-bar{height:6px;background:#333333;border-radius:3px;overflow:hidden;margin:6px 0;border:1px solid #444444;}
 .progress-fill{height:100%;border-radius:3px;transition:width 0.5s cubic-bezier(0.4,0,0.2,1);}
 
 /* MODAL */
@@ -214,7 +214,7 @@ input[type=range]::-webkit-slider-thumb{
 /* SUBTASK */
 .subtask-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:2px solid var(--border);}
 .subtask-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--border-light);background:transparent;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:0.65rem;transition:var(--transition);}
-.subtask-check.checked{background:var(--border);border-color:var(--border);color:#fff;}
+.subtask-check.checked{background:var(--green);border-color:var(--green);color:#000;}
 .subtask-title{flex:1;font-size:0.85rem;}
 .subtask-title.done{text-decoration:line-through;color:var(--text-muted);}
 .subtask-del{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.9rem;padding:4px;}
@@ -327,7 +327,7 @@ input[type=range]::-webkit-slider-thumb{
 .agenda-item.overdue{border-color:var(--red);background:rgba(200,0,42,0.04);}
 .agenda-item.done-item{opacity:0.45;}
 .agenda-check{width:24px;height:24px;border-radius:50%;border:2px solid var(--border);background:transparent;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:0.7rem;transition:var(--transition);}
-.agenda-check.checked{background:var(--border);border-color:var(--border);color:#fff;}
+.agenda-check.checked{background:var(--green);border-color:var(--green);color:#000;}
 .agenda-item-body{flex:1;min-width:0;}
 .agenda-item-title{font-weight:700;font-size:0.9rem;line-height:1.3;}
 .agenda-item-title.done{text-decoration:line-through;color:var(--text-muted);}
@@ -341,7 +341,7 @@ input[type=range]::-webkit-slider-thumb{
 .date-input-wrap input[type=date]{
   width:100%;height:46px;
   border:2px solid var(--border);border-radius:var(--radius-sm);
-  background:var(--card);color:var(--text);
+  background:var(--surface);color:var(--text);
   font-family:'Nunito',sans-serif;font-size:0.95rem;font-weight:700;
   padding:0 14px;outline:none;cursor:pointer;
   -webkit-appearance:none;appearance:none;
@@ -350,10 +350,10 @@ input[type=range]::-webkit-slider-thumb{
 .date-input-wrap input[type=date]:focus{border-color:var(--accent);}
 .date-input-wrap input[type=date]::-webkit-calendar-picker-indicator{
   opacity:1;cursor:pointer;font-size:1.1rem;
-  filter:invert(0.5);
+  filter:invert(1) opacity(0.7);
 }
-.date-input-wrap.due input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.3) sepia(1) saturate(5) hue-rotate(320deg);}
-.date-input-wrap.scheduled input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.3) sepia(1) saturate(5) hue-rotate(200deg);}
+.date-input-wrap.due input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1) sepia(1) saturate(2) hue-rotate(290deg) opacity(0.8);}
+.date-input-wrap.scheduled input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1) sepia(1) saturate(2) hue-rotate(170deg) opacity(0.8);}
 .date-clear-btn{
   position:absolute;right:36px;top:50%;transform:translateY(-50%);
   background:none;border:none;color:var(--text-dim);cursor:pointer;
@@ -385,7 +385,7 @@ input[type=range]::-webkit-slider-thumb{
   border-bottom:2px solid var(--border);flex-shrink:0;
 }
 .plan-day-body{flex:1;overflow-y:auto;padding:5px;}
-.plan-cap-bar{height:4px;background:#d0d0d0;border-radius:2px;margin-top:4px;overflow:hidden;}
+.plan-cap-bar{height:4px;background:#333333;border-radius:2px;margin-top:4px;overflow:hidden;}
 .plan-cap-fill{height:100%;border-radius:2px;transition:width 0.3s;}
 
 /* CALENDAR */
@@ -416,6 +416,24 @@ input[type=range]::-webkit-slider-thumb{
 @keyframes confetti-fall{0%{transform:translateY(-10px) rotate(0deg);opacity:1;}100%{transform:translateY(80px) rotate(720deg);opacity:0;}}
 .confetti-dot{position:fixed;width:6px;height:6px;border-radius:50%;pointer-events:none;animation:confetti-fall 0.6s ease-out forwards;z-index:9999;}
 
+/* PRIORITY TAG */
+.priority-tag{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:0.62rem;font-weight:800;border:1.5px solid;white-space:nowrap;}
+.priority-CRITICAL{background:rgba(255,92,124,0.15);color:#ff5c7c;border-color:rgba(255,92,124,0.4);}
+.priority-HIGH{background:rgba(255,217,92,0.15);color:#ffd95c;border-color:rgba(255,217,92,0.4);}
+.priority-NORMAL{background:rgba(62,255,160,0.12);color:#3effa0;border-color:rgba(62,255,160,0.3);}
+.priority-LOW{background:rgba(100,100,100,0.15);color:#888;border-color:rgba(100,100,100,0.3);}
+.assignee-btn{padding:5px 12px;border-radius:20px;border:2px solid var(--border);background:var(--surface);color:var(--text-muted);font-family:'Nunito',sans-serif;font-size:0.72rem;font-weight:800;cursor:pointer;transition:var(--transition);}
+.assignee-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+/* GIST SYNC */
+.sync-status{display:flex;align-items:center;gap:6px;font-size:0.65rem;font-weight:700;}
+.sync-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.sync-dot.synced{background:var(--green);}
+.sync-dot.syncing{background:var(--yellow);animation:pulse 1s infinite;}
+.sync-dot.error{background:var(--red);}
+.sync-dot.local{background:var(--text-dim);}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+
 /* EMPTY STATE */
 .empty{text-align:center;padding:40px 20px;color:var(--text-dim);}
 .empty-icon{font-size:2.5rem;margin-bottom:12px;}
@@ -442,6 +460,10 @@ input[type=range]::-webkit-slider-thumb{
     <div class="brand">FOCUS<span>FLOW</span></div>
     <div class="header-right">
       <div class="header-day" id="header-day-count"></div>
+      <div id="sync-indicator" class="sync-status" title="Estado de sync" onclick="togglePomoPanel()" style="cursor:default;">
+        <div class="sync-dot local" id="sync-dot"></div>
+        <span id="sync-label" style="color:var(--text-dim);">Local</span>
+      </div>
       <button class="btn-icon-sm" onclick="openModal('modal-add-task')" title="Nueva tarea">＋</button>
     </div>
   </header>
@@ -700,7 +722,32 @@ input[type=range]::-webkit-slider-thumb{
         <button class="btn btn-secondary btn-sm" style="margin-top:8px;" onclick="openModal('modal-add-category')">＋ Nueva categoría</button>
       </div>
       <div class="settings-section">
-        <div class="settings-section-title">💾 Datos</div>
+        <div class="settings-section-title">☁️ Sync con GitHub Gist</div>
+        <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:10px;line-height:1.5;">
+          Sincroniza entre tu PC y móvil gratis.<br>
+          <a href="https://github.com/settings/tokens/new?scopes=gist&description=FocusFlow" target="_blank"
+            style="color:var(--accent);">1. Genera un token aquí</a> (scope: gist)<br>
+          2. Crea un Gist privado en gist.github.com<br>
+          3. Copia el ID del Gist (últimos 32 caracteres de la URL)
+        </div>
+        <div class="field">
+          <label class="field-label">Token de GitHub</label>
+          <input type="password" class="input" id="gist-token" placeholder="ghp_xxxxxxxxxxxx"
+            value="" onchange="saveGistConfig()">
+        </div>
+        <div class="field">
+          <label class="field-label">Gist ID</label>
+          <input type="text" class="input" id="gist-id" placeholder="a1b2c3d4e5f6..."
+            onchange="saveGistConfig()">
+        </div>
+        <div style="display:flex;gap:8px;margin-top:4px;">
+          <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="syncToGist()">☁️ Guardar en Gist</button>
+          <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="syncFromGist()">📥 Cargar desde Gist</button>
+        </div>
+        <div id="gist-status" style="margin-top:8px;font-size:0.68rem;color:var(--text-muted);text-align:center;"></div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-section-title">💾 Datos locales</div>
         <button class="btn btn-secondary" style="margin-bottom:8px;" onclick="exportData()">📥 Exportar backup JSON</button>
         <label class="btn btn-secondary" style="cursor:pointer;">
           📤 Importar desde JSON
@@ -716,7 +763,7 @@ input[type=range]::-webkit-slider-thumb{
     style="position:fixed;right:16px;bottom:80px;z-index:300;
       width:52px;height:52px;border-radius:50%;border:2.5px solid var(--border);
       background:var(--card);cursor:pointer;font-size:1.3rem;
-      box-shadow:3px 3px 0 var(--border);
+      box-shadow:0 4px 12px rgba(0,0,0,0.4);
       display:flex;align-items:center;justify-content:center;
       transition:all 0.2s;user-select:none;">
     🍅
@@ -727,7 +774,7 @@ input[type=range]::-webkit-slider-thumb{
     style="position:fixed;right:16px;bottom:144px;z-index:400;
       width:300px;background:var(--card);border:2.5px solid var(--border);
       border-radius:var(--radius);padding:16px;
-      box-shadow:4px 4px 0 var(--border);
+      box-shadow:0 8px 24px rgba(0,0,0,0.5);
       display:none;animation:slideUp 0.25s ease;">
 
     <!-- HEADER -->
@@ -908,6 +955,24 @@ input[type=range]::-webkit-slider-thumb{
         <option value="IN_PROGRESS">En progreso</option>
         <option value="DONE">Completada</option>
       </select>
+    </div>
+    <div class="field">
+      <label class="field-label">🏷️ Prioridad manual</label>
+      <div class="toggle-group" id="priority-tag-group">
+        <button class="toggle-btn" data-priority="CRITICAL" onclick="selectPriority(this)"
+          style="border-color:#ff5c7c;font-size:0.72rem;">🔴 Crítica</button>
+        <button class="toggle-btn" data-priority="HIGH" onclick="selectPriority(this)"
+          style="font-size:0.72rem;">🟡 Alta</button>
+        <button class="toggle-btn active" data-priority="NORMAL" onclick="selectPriority(this)"
+          style="font-size:0.72rem;">🟢 Normal</button>
+        <button class="toggle-btn" data-priority="LOW" onclick="selectPriority(this)"
+          style="font-size:0.72rem;">⚪ Baja</button>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">👤 Asignado a</label>
+      <div id="assignee-group" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+      <input type="hidden" id="task-assignee" value="Isaac">
     </div>
     <div class="field">
       <label class="field-label">🚨 Fecha límite (opcional)</label>
@@ -1169,6 +1234,7 @@ function loadDB(){
 
 function saveDB(){
   localStorage.setItem(STORAGE_KEY, JSON.stringify(DB));
+  setSyncStatus('local','Local (sin sync)');
 }
 
 function formatDate(dateStr){
@@ -1372,6 +1438,12 @@ function openEditTask(taskId){
   document.getElementById('task-due-native').value = t.due||'';
   document.getElementById('task-status').value = t.status;
   document.getElementById('btn-delete-task').style.display = 'flex';
+  // Set priority
+  document.querySelectorAll('#priority-tag-group .toggle-btn').forEach(b=>b.classList.remove('active'));
+  const pBtn = document.querySelector('[data-priority="'+(t.priority||'NORMAL')+'"]');
+  if(pBtn) pBtn.classList.add('active');
+  // Set assignee
+  renderAssignees(t.assignee||'Isaac');
   ['financial','health','momentum','learning'].forEach(k=>{
     document.getElementById('slider-'+k).value = t[k]||3;
     document.getElementById('val-'+k).textContent = t[k]||3;
@@ -1387,8 +1459,46 @@ function openEditTask(taskId){
   renderModalSubtasks();
 }
 
+// Priority + Assignee
+const PRIORITY_CONFIG = {
+  CRITICAL: {label:'🔴 Crítica', cls:'priority-CRITICAL'},
+  HIGH:     {label:'🟡 Alta',    cls:'priority-HIGH'},
+  NORMAL:   {label:'🟢 Normal',  cls:'priority-NORMAL'},
+  LOW:      {label:'⚪ Baja',    cls:'priority-LOW'},
+};
+
+const ASSIGNEES = [
+  {id:'Isaac',  emoji:'👨', name:'Isaac'},
+  {id:'Esposa', emoji:'👩', name:'Esposa'},
+  {id:'Equipo', emoji:'👥', name:'Equipo'},
+  {id:'Seguimiento', emoji:'👁️', name:'Seguimiento'},
+];
+
+function selectPriority(btn){
+  document.querySelectorAll('#priority-tag-group .toggle-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function renderAssignees(selected){
+  const el = document.getElementById('assignee-group');
+  if(!el) return;
+  el.innerHTML = ASSIGNEES.map(a =>
+    '<button class="assignee-btn'+(a.id===(selected||'Isaac')?' active':'=')+'" '
+    +'onclick="selectAssignee(this,''+a.id+'')">'
+    +a.emoji+' '+a.name+'</button>'
+  ).join('');
+  document.getElementById('task-assignee').value = selected||'Isaac';
+}
+
+function selectAssignee(btn, id){
+  document.querySelectorAll('.assignee-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('task-assignee').value = id;
+}
+
 function selectTime(btn){
-  document.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));
+  const group = btn.closest('.toggle-group');
+  if(group) group.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   refreshLiveScore();
   checkAndShowOverloadWarning();
@@ -1456,7 +1566,7 @@ function saveTask(){
   const title = document.getElementById('task-title').value.trim();
   if(!title){ alert('El título es obligatorio'); return; }
   const editId = document.getElementById('editing-task-id').value;
-  const tBtn = document.querySelector('.toggle-btn.active');
+  const tBtn = document.querySelector('#task-modal-title')?.closest('.modal')?.querySelector('.toggle-btn[data-time].active');
   // Auto-calc timeEstimate from subtask total if subtasks have mins
   const subTotalMins = modalSubtasks.reduce((s,x)=>s+(x.mins||0),0);
   let timeEstimate = tBtn ? tBtn.dataset.time : 'QUICK';
@@ -1475,6 +1585,8 @@ function saveTask(){
     learning: parseInt(document.getElementById('slider-learning').value),
     timeEstimate,
     totalMins: subTotalMins || null,
+    priority: document.querySelector('#priority-tag-group .toggle-btn.active')?.dataset?.priority || 'NORMAL',
+    assignee: document.getElementById('task-assignee')?.value || 'Isaac',
     due: document.getElementById('task-due').value,
     subtasks: modalSubtasks,
     createdAt: editId ? (DB.tasks.find(x=>x.id===editId)||{}).createdAt : new Date().toISOString(),
@@ -2093,68 +2205,74 @@ function renderProjects(){
 
 // ── GANTT VIEW ─────────────────────────────────────────────
 let ganttDragId = null;
-let ganttDragOver = null;
+let ganttDragOverTargetId = null;
+
+function renderSubsInGantt(subs, taskId, color, subMaxMins){
+  if(!subs.length) return '';
+  let html = '';
+  subs.slice(0,3).forEach(function(s){
+    var sMins = s.mins||10;
+    var sPct = Math.max(5, Math.round(sMins/subMaxMins*100));
+    var checked = s.done ? 'checked' : '';
+    var checkMark = s.done ? '✓' : '';
+    html += '<div class="gantt-sub-row">';
+    html += '<button class="subtask-check '+checked+'" style="width:16px;height:16px;font-size:0.5rem;flex-shrink:0;" onclick="toggleSubInGantt(\'' + taskId + '\',\''+s.id+'\',event)">'+checkMark+'</button>';
+    html += '<span style="font-size:0.62rem;font-weight:600;color:var(--text-muted);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;">'+s.title+'</span>';
+    html += '<div class="gantt-sub-bar-track" style="width:60px;flex-shrink:0;"><div class="gantt-sub-bar-fill" style="width:'+sPct+'%;background:'+color+';"></div></div>';
+    html += '</div>';
+  });
+  if(subs.length>3) html += '<div style="font-size:0.55rem;color:var(--text-dim);padding-left:22px;">+' + (subs.length-3) + ' más...</div>';
+  return html;
+}
+
+function buildGanttRow(t, i, color, barPct, scoreColor, mins, subs, subMaxMins){
+  var subsHtml = renderSubsInGantt(subs, t.id, color, subMaxMins);
+  var proj = DB.projects.find(function(p){ return p.id===t.projectId; });
+  var dueHtml = t.due ? '<span style="font-size:0.6rem;color:var(--red);font-weight:700;">🚨'+formatDate(t.due)+'</span>' : '';
+  var subsCount = subs.length ? '<span style="font-size:0.6rem;color:var(--text-muted);">📋'+subs.length+'</span>' : '';
+  var projEmoji = proj ? '<span style="font-size:0.55rem;font-weight:800;color:'+color+';">'+proj.emoji+'</span>' : '';
+  return '<div class="gantt-row" draggable="true"'
+    +' ondragstart="ganttDragStart(event,\'' + t.id + '\')"'
+    +' ondragend="ganttDragEnd(event)"'
+    +' ondragover="ganttDragOver(event,this,\'' + t.id + '\')"'
+    +' ondragleave="ganttDragLeave(this)"'
+    +' ondrop="ganttDrop(event,\'' + t.id + '\')">'
+    +'<div class="gantt-drag-handle">⠿</div>'
+    +'<div class="gantt-left">'
+    +'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">'
+    +'<span style="font-size:0.55rem;font-weight:900;background:'+scoreColor+'22;color:'+scoreColor+';padding:1px 6px;border-radius:10px;border:1px solid '+scoreColor+'44;">#'+(i+1)+' · '+t.score+'pts</span>'
+    +projEmoji+'</div>'
+    +'<div class="gantt-title">'+t.title+'</div>'
+    +'<div class="gantt-meta">'
+    +'<span style="font-size:0.6rem;color:var(--text-muted);font-weight:700;">⏱'+mins+'min</span>'
+    +dueHtml+subsCount+'</div></div>'
+    +'<div class="gantt-right">'
+    +'<div style="display:flex;align-items:center;gap:6px;">'
+    +'<div class="gantt-bar-track" style="flex:1;"><div class="gantt-bar-fill" style="width:'+barPct+'%;background:'+color+';"></div></div>'
+    +'<button onclick="quickStartPomo(\'' + t.id + '\',event)" style="background:var(--border);color:#fff;border:none;border-radius:6px;padding:3px 8px;font-family:'Nunito',sans-serif;font-size:0.65rem;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0;">▶ Pomo</button>'
+    +'</div>'+subsHtml+'</div></div>';
+}
 
 function renderGanttView(tasks){
-  const el = document.getElementById('gantt-view');
+  var el = document.getElementById('gantt-view');
   if(!el) return;
   if(!tasks.length){
-    el.innerHTML=`<div style="text-align:center;padding:20px;color:var(--text-dim);font-size:0.8rem;">Sin tareas pendientes</div>`;
+    el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-dim);font-size:0.8rem;">Sin tareas pendientes</div>';
     return;
   }
-  // Max mins for bar scaling
-  const maxMins = Math.max(...tasks.map(t=>t.totalMins||TIME_ESTIMATES[t.timeEstimate]||20),1);
-  el.innerHTML = tasks.map((t,i)=>{
-    const proj = DB.projects.find(p=>p.id===t.projectId);
-    const color = proj?.color||'#888';
-    const mins = t.totalMins||TIME_ESTIMATES[t.timeEstimate]||20;
-    const barPct = Math.max(8, Math.round(mins/maxMins*100));
-    const scoreColor = t.score>=70?'var(--green)':t.score>=40?'var(--yellow)':'var(--red)';
-    const subs = (t.subtasks||[]).filter(s=>!s.done);
-    const subMaxMins = subs.length ? Math.max(...subs.map(s=>s.mins||10),1) : 1;
-    return `<div class="gantt-row" draggable="true"
-      ondragstart="ganttDragStart(event,'${t.id}')"
-      ondragend="ganttDragEnd(event)"
-      ondragover="ganttDragOver(event,this,'${t.id}')"
-      ondragleave="ganttDragLeave(this)"
-      ondrop="ganttDrop(event,'${t.id}')">
-      <div class="gantt-drag-handle">⠿</div>
-      <div class="gantt-left">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
-          <span style="font-size:0.55rem;font-weight:900;background:${scoreColor}22;color:${scoreColor};padding:1px 6px;border-radius:10px;border:1px solid ${scoreColor}44;">#${i+1} · ${t.score}pts</span>
-          ${proj?`<span style="font-size:0.55rem;font-weight:800;color:${color};">${proj.emoji}</span>`:''}
-        </div>
-        <div class="gantt-title">${t.title}</div>
-        <div class="gantt-meta">
-          <span style="font-size:0.6rem;color:var(--text-muted);font-weight:700;">⏱${mins}min</span>
-          ${t.due?`<span style="font-size:0.6rem;color:var(--red);font-weight:700;">🚨${formatDate(t.due)}</span>`:''}
-          ${subs.length?`<span style="font-size:0.6rem;color:var(--text-muted);">📋${subs.length}</span>`:''}
-        </div>
-      </div>
-      <div class="gantt-right">
-        <div style="display:flex;align-items:center;gap:6px;">
-          <div class="gantt-bar-track" style="flex:1;">
-            <div class="gantt-bar-fill" style="width:${barPct}%;background:${color};"></div>
-          </div>
-          <button onclick="quickStartPomo('${t.id}',event)"
-            style="background:var(--border);color:#fff;border:none;border-radius:6px;padding:3px 8px;font-family:'Nunito',sans-serif;font-size:0.65rem;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0;">▶ Pomo</button>
-        </div>
-        ${subs.slice(0,3).map(s=>{
-          const sMins=s.mins||10;
-          const sPct=Math.max(5,Math.round(sMins/subMaxMins*100));
-          return `<div class="gantt-sub-row">
-            <button class="subtask-check ${s.done?'checked':''}" style="width:16px;height:16px;font-size:0.5rem;flex-shrink:0;"
-              onclick="toggleSubInGantt('${t.id}','${s.id}',event)">${s.done?'✓':''}</button>
-            <span style="font-size:0.62rem;font-weight:600;color:var(--text-muted);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;">${s.title}</span>
-            <div class="gantt-sub-bar-track" style="width:60px;flex-shrink:0;">
-              <div class="gantt-sub-bar-fill" style="width:${sPct}%;background:${color};"></div>
-            </div>
-          </div>`;
-        }).join('')}
-        ${subs.length>3?`<div style="font-size:0.55rem;color:var(--text-dim);padding-left:22px;">+${subs.length-3} más...</div>`:''}
-      </div>
-    </div>`;
-  }).join('');
+  var maxMins = Math.max.apply(null, tasks.map(function(t){ return t.totalMins||TIME_ESTIMATES[t.timeEstimate]||20; }).concat([1]));
+  var html = '';
+  tasks.forEach(function(t, i){
+    var proj = DB.projects.find(function(p){ return p.id===t.projectId; });
+    var color = proj ? proj.color : '#888';
+    var mins = t.totalMins||TIME_ESTIMATES[t.timeEstimate]||20;
+    var barPct = Math.max(8, Math.round(mins/maxMins*100));
+    var scoreColor = t.score>=70?'var(--green)':t.score>=40?'var(--yellow)':'var(--red)';
+    var subs = (t.subtasks||[]).filter(function(s){ return !s.done; });
+    var subMaxMins = subs.length ? Math.max.apply(null, subs.map(function(s){ return s.mins||10; }).concat([1])) : 1;
+    html += buildGanttRow(t, i, color, barPct, scoreColor, mins, subs, subMaxMins);
+  });
+  el.innerHTML = html;
 }
 
 function ganttDragStart(e, id){
@@ -2175,7 +2293,7 @@ function ganttDragOver(e, el, id){
   const mid=rect.top+rect.height/2;
   document.querySelectorAll('.gantt-row').forEach(r=>r.classList.remove('drag-over-top','drag-over-bottom'));
   el.classList.add(e.clientY<mid?'drag-over-top':'drag-over-bottom');
-  ganttDragOver=id;
+  ganttDragOverTargetId=id;
 }
 function ganttDragLeave(el){ el.classList.remove('drag-over-top','drag-over-bottom'); }
 function ganttDrop(e, targetId){
@@ -2352,6 +2470,8 @@ function taskCardHTML(t, proj){
       <div class="task-meta">
         ${proj?`<span class="task-project" style="color:${proj.color};border-color:${proj.color}44;">${proj.emoji} ${proj.name}</span>`:''}
         <span class="pill ${timePill}">${timeLabel}</span>
+        ${t.priority&&t.priority!=='NORMAL'?`<span class="priority-tag priority-${t.priority}">${PRIORITY_CONFIG[t.priority]?.label||''}</span>`:''}
+        ${t.assignee&&t.assignee!=='Isaac'?`<span style="font-size:0.6rem;font-weight:800;color:var(--text-muted);background:var(--surface);padding:2px 7px;border-radius:20px;border:1px solid var(--border);">${ASSIGNEES.find(a=>a.id===t.assignee)?.emoji||'👤'} ${t.assignee}</span>`:''}
         ${t.due?`<span style="font-size:0.6rem;color:var(--text-dim);">📅 ${formatDate(t.due)}</span>`:''}
       </div>
       ${subtaskTotal?`<div class="task-subtasks">📋 ${subtaskDone}/${subtaskTotal} subtareas</div>`:''}
@@ -2541,7 +2661,7 @@ function renderAgendaView(){
       <span style="font-size:0.7rem;font-weight:700;color:var(--text-muted);">⏰ Capacidad del día</span>
       <span style="font-size:0.7rem;font-weight:900;color:${barColor};">${load}min / ${cap}min</span>
     </div>
-    <div style="height:6px;background:#d0d0d0;border-radius:3px;overflow:hidden;border:1px solid #bbb;">
+    <div style="height:6px;background:#333333;border-radius:3px;overflow:hidden;border:1px solid #444;">
       <div style="height:100%;width:${pct}%;background:${barColor};border-radius:3px;transition:width 0.4s;"></div>
     </div>` : '';
 
@@ -2880,6 +3000,7 @@ function renderSettings(){
   document.getElementById('setting-start-date').value = start;
   renderWeeklySchedule();
   renderCategoriesList();
+  loadGistConfig();
 }
 
 function renderWeeklySchedule(){
@@ -2908,7 +3029,7 @@ function renderWeeklySchedule(){
         <span style="font-size:0.75rem;font-weight:700;color:var(--text-muted);">Capacidad disponible hoy</span>
         <span style="font-size:0.75rem;font-weight:900;color:${todayColor};">${todayLoad}min usados / ${todayCap}min totales</span>
       </div>
-      <div style="height:8px;background:#d0d0d0;border-radius:4px;overflow:hidden;border:1px solid #bbbbbb;">
+      <div style="height:8px;background:#333333;border-radius:4px;overflow:hidden;border:1px solid #444444;">
         <div style="height:100%;width:${todayPct}%;background:${todayColor};border-radius:4px;transition:width 0.4s;"></div>
       </div>
       <div style="font-size:0.72rem;font-weight:700;margin-top:6px;color:${todayColor};">
@@ -3461,7 +3582,7 @@ function renderDayPanel(ds){
         <span style="color:var(--text-muted);">Carga del día</span>
         <span style="color:${barColor};">${load}/${cap}min</span>
       </div>
-      <div style="height:6px;background:#d0d0d0;border-radius:3px;overflow:hidden;">
+      <div style="height:6px;background:#333333;border-radius:3px;overflow:hidden;">
         <div style="height:100%;width:${pct}%;background:${barColor};border-radius:3px;"></div>
       </div>
     </div>`;
@@ -3910,12 +4031,93 @@ function initPomodoro(){
   resetPomoTimer();
 }
 
+// ===================== GITHUB GIST SYNC =====================
+function saveGistConfig(){
+  const token = document.getElementById('gist-token')?.value||'';
+  const gistId = document.getElementById('gist-id')?.value||'';
+  DB.settings.gistToken = token;
+  DB.settings.gistId = gistId;
+  saveDB();
+}
+
+function loadGistConfig(){
+  const t = document.getElementById('gist-token');
+  const g = document.getElementById('gist-id');
+  if(t) t.value = DB.settings.gistToken||'';
+  if(g) g.value = DB.settings.gistId||'';
+}
+
+function setSyncStatus(state, msg){
+  const dot = document.getElementById('sync-dot');
+  const lbl = document.getElementById('sync-label');
+  const statusEl = document.getElementById('gist-status');
+  if(dot){ dot.className='sync-dot '+state; }
+  if(lbl){ lbl.textContent = {synced:'Sync ✓',syncing:'Sincronizando...',error:'Error sync',local:'Local'}[state]||msg; }
+  if(statusEl) statusEl.textContent = msg||'';
+}
+
+async function syncToGist(){
+  const token = DB.settings.gistToken;
+  const gistId = DB.settings.gistId;
+  if(!token||!gistId){ setSyncStatus('error','⚠️ Configura el token y Gist ID primero'); return; }
+  setSyncStatus('syncing','Guardando en Gist...');
+  try{
+    const res = await fetch('https://api.github.com/gists/'+gistId, {
+      method:'PATCH',
+      headers:{'Authorization':'token '+token,'Content-Type':'application/json'},
+      body: JSON.stringify({files:{'focusflow-data.json':{content:JSON.stringify(DB)}}})
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    DB.settings.lastSync = new Date().toISOString();
+    saveDB();
+    setSyncStatus('synced','✓ Guardado en Gist — '+new Date().toLocaleTimeString());
+  } catch(e){
+    setSyncStatus('error','❌ Error: '+e.message);
+  }
+}
+
+async function syncFromGist(){
+  const token = DB.settings.gistToken;
+  const gistId = DB.settings.gistId;
+  if(!token||!gistId){ setSyncStatus('error','⚠️ Configura el token y Gist ID primero'); return; }
+  setSyncStatus('syncing','Cargando desde Gist...');
+  try{
+    const res = await fetch('https://api.github.com/gists/'+gistId, {
+      headers:{'Authorization':'token '+token}
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    const content = data.files?.['focusflow-data.json']?.content;
+    if(!content) throw new Error('Archivo no encontrado en el Gist');
+    const parsed = JSON.parse(content);
+    if(!parsed.tasks||!parsed.projects) throw new Error('Formato inválido');
+    if(!confirm('¿Reemplazar datos locales con los del Gist?')) return;
+    DB = parsed;
+    saveDB();
+    renderDashboard(); renderProjects(); renderSettings();
+    setSyncStatus('synced','✓ Datos cargados — '+new Date().toLocaleTimeString());
+  } catch(e){
+    setSyncStatus('error','❌ Error: '+e.message);
+  }
+}
+
+// Auto-sync to Gist every 2 min if configured
+function startAutoSync(){
+  if(DB.settings.gistToken && DB.settings.gistId){
+    setSyncStatus('synced', DB.settings.lastSync ? '✓ Último sync: '+new Date(DB.settings.lastSync).toLocaleTimeString() : 'Configurado');
+    setInterval(()=>{
+      if(DB.settings.gistToken && DB.settings.gistId) syncToGist();
+    }, 120000);
+  }
+}
+
 // ===================== INIT =====================
 loadDB();
 renderDashboard();
 renderProjects();
 populateMatrixFilter();
 initPomodoro();
+startAutoSync();
 </script>
 </body>
 </html>
