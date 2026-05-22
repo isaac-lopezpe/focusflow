@@ -652,7 +652,7 @@ function renderProjList(){
   const el=document.getElementById('proj-list');
   if(!DB.projects.length){
     el.innerHTML='<div class="empty"><div class="empty-icon">📁</div>Sin proyectos.<br><br>'
-      +'<button class="btn btn-primary" onclick="openModal('m-add-proj')">＋ Crear proyecto</button></div>';
+      +'<button class="btn btn-primary" onclick="openModal(\'m-add-proj\')">＋ Crear proyecto</button></div>';
     return;
   }
   const sorted=[...DB.projects].sort((a,b)=>(a.order||0)-(b.order||0));
@@ -686,7 +686,7 @@ function renderProjList(){
       +'</div>'
       +'</div>';
   });
-  html+='<button onclick="openModal('m-add-proj')" style="display:block;width:100%;background:var(--s1);border:2px dashed var(--border);color:var(--muted);font-size:0.85rem;font-weight:600;cursor:pointer;font-family:inherit;padding:12px;border-radius:var(--r);text-align:center;margin-top:4px;">＋ Nuevo proyecto</button>';
+  html+='<button onclick="openModal(\'m-add-proj\')" style="display:block;width:100%;background:var(--s1);border:2px dashed var(--border);color:var(--muted);font-size:0.85rem;font-weight:600;cursor:pointer;font-family:inherit;padding:12px;border-radius:var(--r);text-align:center;margin-top:4px;">＋ Nuevo proyecto</button>';
   el.innerHTML=html;
 }
 
