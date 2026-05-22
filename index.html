@@ -557,6 +557,13 @@ function save(){
   if(DB.settings.gistToken && DB.settings.gistId) debounceGist();
 }
 
+function cleanGistId(raw){
+  // Accept full URL or just the ID
+  if(!raw) return '';
+  const match = raw.match(/([a-f0-9]{20,})\/?$/i);
+  return match ? match[1] : raw.trim();
+}
+
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2); }
 function fmtDate(d){ if(!d) return ''; const[y,m,day]=d.split('-'); return day+'/'+m+'/'+y; }
 
@@ -1207,8 +1214,11 @@ function removePerson(name){
 
 // ── GIST SYNC ──────────────────────────────────────────────
 function saveGistCfg(){
-  DB.settings.gistToken=document.getElementById('cfg-token').value;
-  DB.settings.gistId=document.getElementById('cfg-gist').value;
+  DB.settings.gistToken = document.getElementById('cfg-token').value.trim();
+  const rawId = document.getElementById('cfg-gist').value.trim();
+  DB.settings.gistId = cleanGistId(rawId);
+  // Show cleaned ID back in input
+  document.getElementById('cfg-gist').value = DB.settings.gistId;
   save();
 }
 
@@ -1229,10 +1239,14 @@ async function pushGist(){
   if(!token||!gistId){ setSyncState('local'); return; }
   setSyncState('busy');
   try{
+    // Don't save token/gistId inside the Gist (security + cross-device conflict)
+    const dbToSave = JSON.parse(JSON.stringify(DB));
+    delete dbToSave.settings.gistToken;
+    delete dbToSave.settings.gistId;
     const r=await fetch('https://api.github.com/gists/'+gistId,{
       method:'PATCH',
       headers:{'Authorization':'token '+token,'Content-Type':'application/json'},
-      body:JSON.stringify({files:{'focusflow-data.json':{content:JSON.stringify(DB)}}})
+      body:JSON.stringify({files:{'focusflow-data.json':{content:JSON.stringify(dbToSave)}}})
     });
     if(!r.ok) throw new Error(r.status);
     DB.settings.lastSync=new Date().toISOString(); localStorage.setItem(KEY,JSON.stringify(DB));
@@ -1254,7 +1268,13 @@ async function pullGist(){
     const parsed=JSON.parse(content);
     if(!parsed.tasks||!parsed.projects) throw new Error('Formato inválido');
     if(!confirm('¿Cargar datos del Gist? Se reemplazarán los datos locales.')) return;
-    DB=parsed; localStorage.setItem(KEY,JSON.stringify(DB));
+    // Preserve local credentials — don't overwrite with Gist values
+    const localToken = DB.settings.gistToken;
+    const localGistId = DB.settings.gistId;
+    DB = parsed;
+    DB.settings.gistToken = localToken;
+    DB.settings.gistId = localGistId;
+    localStorage.setItem(KEY,JSON.stringify(DB));
     setSyncState('ok');
     document.getElementById('gist-msg').textContent='✓ Cargado '+new Date().toLocaleTimeString();
     renderHoy(); renderProjList(); renderConfig();
