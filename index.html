@@ -1400,8 +1400,40 @@ document.head.appendChild(cfStyle);
 load();
 renderHoy();
 if(DB.settings.gistToken&&DB.settings.gistId){
-  setSyncState('ok');
+  setSyncState('busy');
+  autoSyncOnStart();
   setInterval(pushGist,120000);
+}
+
+async function autoSyncOnStart(){
+  const token=DB.settings.gistToken, gistId=DB.settings.gistId;
+  if(!token||!gistId) return;
+  try{
+    const r=await fetch('https://api.github.com/gists/'+gistId,{
+      headers:{'Authorization':'token '+token}
+    });
+    if(!r.ok) throw new Error(r.status);
+    const data=await r.json();
+    const content=data.files?.['focusflow-data.json']?.content;
+    if(!content){ setSyncState('ok'); return; }
+    const parsed=JSON.parse(content);
+    if(!parsed.tasks||!parsed.projects){ setSyncState('ok'); return; }
+    // Use whichever version is newer
+    const remoteTime=parsed.settings?.lastSync||'';
+    const localTime=DB.settings.lastSync||'';
+    if(remoteTime && remoteTime>localTime){
+      const localToken=DB.settings.gistToken;
+      const localGistId=DB.settings.gistId;
+      DB=parsed;
+      DB.settings.gistToken=localToken;
+      DB.settings.gistId=localGistId;
+      localStorage.setItem(KEY,JSON.stringify(DB));
+      renderHoy(); renderProjList();
+      const msg=document.getElementById('gist-msg');
+      if(msg) msg.textContent='Sincronizado al abrir — '+new Date().toLocaleTimeString();
+    }
+    setSyncState('ok');
+  }catch(e){ setSyncState('err'); }
 }
 </script>
 </body>
