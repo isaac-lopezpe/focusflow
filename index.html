@@ -302,10 +302,11 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
   <header class="hdr">
     <div class="logo">FOCUS<span>FLOW</span></div>
     <div class="hdr-right">
-      <button class="sync-pill" onclick="syncNow()" id="sync-pill">
+      <button class="sync-pill" onclick="syncNow()" id="sync-pill" title="Guardar en Gist">
         <div class="sync-dot" id="sync-dot"></div>
         <span id="sync-lbl">Local</span>
       </button>
+      <button class="icon-btn" onclick="pullAndRefresh()" id="pull-btn" title="Cargar desde Gist" style="font-size:0.75rem;font-weight:700;">↓ Gist</button>
       <button class="icon-btn" onclick="openModal('m-add-task')">＋</button>
     </div>
   </header>
@@ -1282,6 +1283,42 @@ async function pullGist(){
 }
 
 function syncNow(){ if(DB.settings.gistToken&&DB.settings.gistId) pushGist(); else { goView('config',document.getElementById('nb-config')); } }
+
+async function pullAndRefresh(){
+  const token=DB.settings.gistToken, gistId=DB.settings.gistId;
+  if(!token||!gistId){ goView('config',document.getElementById('nb-config')); return; }
+  setSyncState('busy');
+  const btn=document.getElementById('pull-btn');
+  if(btn){ btn.textContent='...'; btn.disabled=true; }
+  try{
+    const r=await fetch('https://api.github.com/gists/'+gistId,{
+      headers:{'Authorization':'token '+token}
+    });
+    if(!r.ok) throw new Error(r.status);
+    const data=await r.json();
+    const content=data.files?.['focusflow-data.json']?.content;
+    if(!content) throw new Error('Sin datos');
+    const parsed=JSON.parse(content);
+    if(!parsed.tasks||!parsed.projects) throw new Error('Formato inválido');
+    const localToken=DB.settings.gistToken;
+    const localGistId=DB.settings.gistId;
+    DB=parsed;
+    DB.settings.gistToken=localToken;
+    DB.settings.gistId=localGistId;
+    localStorage.setItem(KEY,JSON.stringify(DB));
+    renderHoy(); renderProjList();
+    if(currentView==='gantt') renderGantt();
+    if(currentView==='config') renderConfig();
+    setSyncState('ok');
+    if(btn){ btn.textContent='↓ Gist'; btn.disabled=false; }
+    // Brief feedback
+    const origLbl=document.getElementById('sync-lbl');
+    if(origLbl){ origLbl.textContent='¡Listo!'; setTimeout(()=>origLbl.textContent='Sync ✓',2000); }
+  }catch(e){
+    setSyncState('err');
+    if(btn){ btn.textContent='↓ Gist'; btn.disabled=false; }
+  }
+}
 
 // ── DATA IO ────────────────────────────────────────────────
 function exportData(){
