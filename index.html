@@ -496,8 +496,9 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
       <div class="field"><label class="fl">Fecha límite</label><input type="date" class="inp" id="t-due"></div>
     </div>
     <div class="field">
-      <label class="fl">📅 Días de trabajo</label>
-      <div style="display:flex;gap:4px;flex-wrap:wrap;" id="t-workdays-group">
+      <label class="fl">📅 Programar tarea</label>
+      <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;">¿Qué días de la semana trabajarás en esto?</div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;" id="t-workdays-group">
         <button class="tgl-btn" data-day="1" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Lu</button>
         <button class="tgl-btn" data-day="2" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Ma</button>
         <button class="tgl-btn" data-day="3" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Mi</button>
@@ -506,7 +507,8 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
         <button class="tgl-btn" data-day="6" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Sá</button>
         <button class="tgl-btn" data-day="0" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Do</button>
       </div>
-      <div style="font-size:0.62rem;color:var(--muted);margin-top:4px;">Selecciona los días que trabajarás en esta tarea</div>
+      <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;">¿Desde cuándo? (si no pones, desde hoy)</div>
+      <input type="date" class="inp" id="t-start-date" style="margin-bottom:0;">
     </div>
     <div class="field"><label class="fl">Notas</label><textarea class="inp ta" id="t-notes" rows="2" placeholder="Notas opcionales..."></textarea></div>
     <button class="btn btn-primary" onclick="saveTask()">GUARDAR TAREA</button>
@@ -540,8 +542,9 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
       <div class="field"><label class="fl">Fecha límite</label><input type="date" class="inp" id="s-due"></div>
     </div>
     <div class="field">
-      <label class="fl">📅 Días de trabajo</label>
-      <div style="display:flex;gap:4px;flex-wrap:wrap;" id="s-workdays-group">
+      <label class="fl">📅 Programar subtarea</label>
+      <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;">¿Qué días de la semana?</div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;" id="s-workdays-group">
         <button class="tgl-btn" data-day="1" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Lu</button>
         <button class="tgl-btn" data-day="2" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Ma</button>
         <button class="tgl-btn" data-day="3" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Mi</button>
@@ -550,6 +553,8 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
         <button class="tgl-btn" data-day="6" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Sá</button>
         <button class="tgl-btn" data-day="0" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Do</button>
       </div>
+      <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;">¿Desde cuándo?</div>
+      <input type="date" class="inp" id="s-start-date" style="margin-bottom:0;">
     </div>
     <button class="btn btn-primary" onclick="saveSub()">GUARDAR SUBTAREA</button>
     <button class="btn btn-danger btn-sm" id="s-del-btn" style="margin-top:8px;display:none;" onclick="deleteSub()">🗑️ Eliminar subtarea</button>
@@ -581,8 +586,9 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
       <div class="field"><label class="fl">Fecha límite</label><input type="date" class="inp" id="p-due"></div>
     </div>
     <div class="field">
-      <label class="fl">📅 Días de trabajo</label>
-      <div style="display:flex;gap:4px;flex-wrap:wrap;" id="p-workdays-group">
+      <label class="fl">📅 Programar proyecto</label>
+      <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;">¿Qué días de la semana?</div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;" id="p-workdays-group">
         <button class="tgl-btn" data-day="1" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Lu</button>
         <button class="tgl-btn" data-day="2" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Ma</button>
         <button class="tgl-btn" data-day="3" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Mi</button>
@@ -591,6 +597,8 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
         <button class="tgl-btn" data-day="6" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Sá</button>
         <button class="tgl-btn" data-day="0" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Do</button>
       </div>
+      <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;">¿Desde cuándo?</div>
+      <input type="date" class="inp" id="p-start-date" style="margin-bottom:0;">
     </div>
     <button class="btn btn-primary" onclick="saveProj()">GUARDAR PROYECTO</button>
     <button class="btn btn-danger btn-sm" id="p-del-btn" style="margin-top:8px;display:none;" onclick="deleteProj()">🗑️ Eliminar proyecto</button>
@@ -661,19 +669,26 @@ const PRI_ORDER={critical:0,high:1,normal:2,low:3};
 
 function todayJsDay(){ return new Date().getDay(); }
 
-function isActiveToday(workDays, due){
+function isActiveToday(workDays, due, startDate){
   const today = new Date();
+  today.setHours(0,0,0,0);
   const todayStr = today.toISOString().split('T')[0];
   const todayDay = today.getDay();
-  // Overdue — always show
+
+  // Overdue — always show (past due date and not done)
   if(due && due < todayStr) return {show:true, overdue:true};
   // Due today — always show
   if(due && due === todayStr) return {show:true, dueToday:true};
-  // Has workdays and today matches
+
+  // Check workdays + range
   if(workDays && workDays.length > 0 && workDays.includes(todayDay)){
-    // Only if not past due
-    if(!due || due >= todayStr) return {show:true};
+    // Check startDate — don't show before start
+    if(startDate && startDate > todayStr) return {show:false};
+    // Check due date — don't show after due
+    if(due && due < todayStr) return {show:true, overdue:true};
+    return {show:true};
   }
+
   return {show:false};
 }
 
@@ -693,7 +708,7 @@ function renderHoy(){
 
     if(!tasks.length){
       // Project has no tasks — check if project itself is active today
-      const act=isActiveToday(p.workDays, p.due);
+      const act=isActiveToday(p.workDays, p.due, p.startDate);
       if(act.show) items.push({type:'project',proj:p,overdue:act.overdue,dueToday:act.dueToday,
         order:p.dashOrder!=null?p.dashOrder:999});
       return;
@@ -704,7 +719,7 @@ function renderHoy(){
 
       if(!subs.length){
         // Task has no subtasks — check if task is active today
-        const act=isActiveToday(t.workDays, t.due);
+        const act=isActiveToday(t.workDays, t.due, t.startDate);
         if(act.show) items.push({type:'task',proj:p,task:t,overdue:act.overdue,dueToday:act.dueToday,
           order:t.dashOrder!=null?t.dashOrder:999});
         return;
@@ -712,7 +727,7 @@ function renderHoy(){
 
       // Task has subtasks — show each subtask separately
       subs.forEach(s=>{
-        const act=isActiveToday(s.workDays, s.due);
+        const act=isActiveToday(s.workDays, s.due, s.startDate);
         if(act.show) items.push({type:'sub',proj:p,task:t,sub:s,overdue:act.overdue,dueToday:act.dueToday,
           order:s.dashOrder!=null?s.dashOrder:999});
       });
@@ -1201,6 +1216,7 @@ function openAddTask(projId){
   selTglVal('t-status-group','todo');
   buildAsgnGroup('t-asgn-group','Isaac');
   setWorkDays([]);
+  document.getElementById('t-start-date').value='';
   openModal('m-add-task');
 }
 
@@ -1220,6 +1236,7 @@ function openEditTask(id){
   selTglVal('t-status-group',t.status||'todo');
   buildAsgnGroup('t-asgn-group',t.assignee||'Isaac');
   setWorkDays(t.workDays||[]);
+  document.getElementById('t-start-date').value=t.startDate||'';
   openModal('m-add-task');
 }
 
@@ -1237,6 +1254,7 @@ function saveTask(){
     mins:parseInt(document.getElementById('t-mins').value)||null,
     due:document.getElementById('t-due').value||null,
     workDays:getWorkDaysFrom('t-workdays-group'),
+    startDate:document.getElementById('t-start-date').value||null,
     notes:document.getElementById('t-notes').value.trim(),
   };
   if(editId){
@@ -1274,6 +1292,7 @@ function openAddSub(taskId){
   selTglVal('s-pri-group','normal');
   buildAsgnGroup('s-asgn-group','Isaac');
   setWorkDaysTo('s-workdays-group',[]);
+  document.getElementById('s-start-date').value='';
   openModal('m-add-sub');
 }
 
@@ -1289,6 +1308,7 @@ function openEditSub(id){
   selTglVal('s-pri-group',s.priority||'normal');
   buildAsgnGroup('s-asgn-group',s.assignee||'Isaac');
   setWorkDaysTo('s-workdays-group',s.workDays||[]);
+  document.getElementById('s-start-date').value=s.startDate||'';
   openModal('m-add-sub');
 }
 
@@ -1305,6 +1325,7 @@ function saveSub(){
     mins:parseInt(document.getElementById('s-mins').value)||null,
     due:document.getElementById('s-due').value||null,
     workDays:getWorkDaysFrom('s-workdays-group'),
+    startDate:document.getElementById('s-start-date').value||null,
     done:false,
   };
   if(editId){
@@ -1340,6 +1361,7 @@ function openAddProj(){
   document.getElementById('p-due').value='';
   selTglVal('p-pri-group','normal');
   setWorkDaysTo('p-workdays-group',[]);
+  document.getElementById('p-start-date').value='';
   openModal('m-add-proj');
 }
 
@@ -1355,6 +1377,7 @@ function openEditProj(id){
   document.getElementById('p-due').value=p.due||'';
   selTglVal('p-pri-group',p.priority||'normal');
   setWorkDaysTo('p-workdays-group',p.workDays||[]);
+  document.getElementById('p-start-date').value=p.startDate||'';
   openModal('m-add-proj');
 }
 
@@ -1370,6 +1393,7 @@ function saveProj(){
     mins:parseInt(document.getElementById('p-mins').value)||null,
     due:document.getElementById('p-due').value||null,
     workDays:getWorkDaysFrom('p-workdays-group'),
+    startDate:document.getElementById('p-start-date').value||null,
   };
   if(editId){
     const idx=DB.projects.findIndex(x=>x.id===editId);
