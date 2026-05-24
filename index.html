@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>FocusFlow</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-size='20' font-family='Arial'>⚡%3C/text%3E%3C/svg%3E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FocusFlow">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%236366f1'/%3E%3Ctext x='90' y='130' text-anchor='middle' font-size='110' font-family='Arial'>⚡%3C/text%3E%3C/svg%3E">
 <style>
 :root {
   --bg: #0a0a0a;
@@ -288,6 +294,7 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
 .pomo-time{font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:700;line-height:1;}
 .pomo-lbl{font-size:0.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
 
+.today-task{border-color:var(--accent) !important;}
 @media(min-width:600px){
   .view{max-width:600px;margin:0 auto;}
   .modal{border-radius:var(--r);margin-bottom:20px;}
@@ -488,6 +495,19 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
       <div class="field"><label class="fl">Duración estimada (min)</label><input type="number" class="inp" id="t-mins" placeholder="45" min="1"></div>
       <div class="field"><label class="fl">Fecha límite</label><input type="date" class="inp" id="t-due"></div>
     </div>
+    <div class="field">
+      <label class="fl">📅 Días de trabajo</label>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;" id="t-workdays-group">
+        <button class="tgl-btn" data-day="1" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Lu</button>
+        <button class="tgl-btn" data-day="2" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Ma</button>
+        <button class="tgl-btn" data-day="3" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Mi</button>
+        <button class="tgl-btn" data-day="4" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Ju</button>
+        <button class="tgl-btn" data-day="5" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Vi</button>
+        <button class="tgl-btn" data-day="6" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Sá</button>
+        <button class="tgl-btn" data-day="0" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Do</button>
+      </div>
+      <div style="font-size:0.62rem;color:var(--muted);margin-top:4px;">Selecciona los días que trabajarás en esta tarea</div>
+    </div>
     <div class="field"><label class="fl">Notas</label><textarea class="inp ta" id="t-notes" rows="2" placeholder="Notas opcionales..."></textarea></div>
     <button class="btn btn-primary" onclick="saveTask()">GUARDAR TAREA</button>
     <button class="btn btn-danger btn-sm" id="t-del-btn" style="margin-top:8px;display:none;" onclick="deleteTask()">🗑️ Eliminar tarea</button>
@@ -519,6 +539,18 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
       <div class="field"><label class="fl">Duración (min)</label><input type="number" class="inp" id="s-mins" placeholder="25" min="1"></div>
       <div class="field"><label class="fl">Fecha límite</label><input type="date" class="inp" id="s-due"></div>
     </div>
+    <div class="field">
+      <label class="fl">📅 Días de trabajo</label>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;" id="s-workdays-group">
+        <button class="tgl-btn" data-day="1" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Lu</button>
+        <button class="tgl-btn" data-day="2" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Ma</button>
+        <button class="tgl-btn" data-day="3" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Mi</button>
+        <button class="tgl-btn" data-day="4" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Ju</button>
+        <button class="tgl-btn" data-day="5" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Vi</button>
+        <button class="tgl-btn" data-day="6" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Sá</button>
+        <button class="tgl-btn" data-day="0" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Do</button>
+      </div>
+    </div>
     <button class="btn btn-primary" onclick="saveSub()">GUARDAR SUBTAREA</button>
     <button class="btn btn-danger btn-sm" id="s-del-btn" style="margin-top:8px;display:none;" onclick="deleteSub()">🗑️ Eliminar subtarea</button>
   </div>
@@ -534,6 +566,31 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
     <div class="row">
       <div class="field"><label class="fl">Emoji</label><input type="text" class="inp" id="p-emoji" placeholder="🚀" maxlength="2"></div>
       <div class="field"><label class="fl">Color</label><input type="color" class="inp" id="p-color" value="#6366f1" style="height:42px;padding:4px;cursor:pointer;"></div>
+    </div>
+    <div class="field">
+      <label class="fl">Prioridad</label>
+      <div class="tgl" id="p-pri-group">
+        <button class="tgl-btn" data-val="critical" onclick="selTgl('p-pri-group',this)">🔴 Crítica</button>
+        <button class="tgl-btn" data-val="high" onclick="selTgl('p-pri-group',this)">🟡 Alta</button>
+        <button class="tgl-btn on" data-val="normal" onclick="selTgl('p-pri-group',this)">🟢 Normal</button>
+        <button class="tgl-btn" data-val="low" onclick="selTgl('p-pri-group',this)">⚪ Baja</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field"><label class="fl">Duración estimada (min)</label><input type="number" class="inp" id="p-mins" placeholder="60" min="1"></div>
+      <div class="field"><label class="fl">Fecha límite</label><input type="date" class="inp" id="p-due"></div>
+    </div>
+    <div class="field">
+      <label class="fl">📅 Días de trabajo</label>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;" id="p-workdays-group">
+        <button class="tgl-btn" data-day="1" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Lu</button>
+        <button class="tgl-btn" data-day="2" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Ma</button>
+        <button class="tgl-btn" data-day="3" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Mi</button>
+        <button class="tgl-btn" data-day="4" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Ju</button>
+        <button class="tgl-btn" data-day="5" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Vi</button>
+        <button class="tgl-btn" data-day="6" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Sá</button>
+        <button class="tgl-btn" data-day="0" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Do</button>
+      </div>
     </div>
     <button class="btn btn-primary" onclick="saveProj()">GUARDAR PROYECTO</button>
     <button class="btn btn-danger btn-sm" id="p-del-btn" style="margin-top:8px;display:none;" onclick="deleteProj()">🗑️ Eliminar proyecto</button>
@@ -602,6 +659,24 @@ const DAYS=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'
 const MONTHS=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const PRI_ORDER={critical:0,high:1,normal:2,low:3};
 
+function todayJsDay(){ return new Date().getDay(); }
+
+function isActiveToday(workDays, due){
+  const today = new Date();
+  const todayStr = today.toISOString().split('T')[0];
+  const todayDay = today.getDay();
+  // Overdue — always show
+  if(due && due < todayStr) return {show:true, overdue:true};
+  // Due today — always show
+  if(due && due === todayStr) return {show:true, dueToday:true};
+  // Has workdays and today matches
+  if(workDays && workDays.length > 0 && workDays.includes(todayDay)){
+    // Only if not past due
+    if(!due || due >= todayStr) return {show:true};
+  }
+  return {show:false};
+}
+
 function renderHoy(){
   const now=new Date();
   const start=DB.settings.startDate?new Date(DB.settings.startDate):now;
@@ -610,21 +685,161 @@ function renderHoy(){
   document.getElementById('hoy-day').textContent='HOY ES '+DAYS[now.getDay()].toUpperCase()+' '+now.getDate()+' DE '+MONTHS[now.getMonth()].toUpperCase()+' · DÍA '+day+' DE 365';
   document.getElementById('hoy-sub').textContent=rem+' días para tu independencia financiera';
 
-  // All non-done tasks sorted by priority then project order
-  const tasks=DB.tasks.filter(t=>t.status!=='done')
-    .sort((a,b)=>(PRI_ORDER[a.priority]||2)-(PRI_ORDER[b.priority]||2));
-
   const el=document.getElementById('hoy-list');
-  if(!tasks.length){
-    el.innerHTML='<div class="empty"><div class="empty-icon">🎉</div>¡Todo completado!</div>';
+  const items=[];
+
+  DB.projects.forEach(p=>{
+    const tasks=DB.tasks.filter(t=>t.projectId===p.id&&t.status!=='done');
+
+    if(!tasks.length){
+      // Project has no tasks — check if project itself is active today
+      const act=isActiveToday(p.workDays, p.due);
+      if(act.show) items.push({type:'project',proj:p,overdue:act.overdue,dueToday:act.dueToday,
+        order:p.dashOrder!=null?p.dashOrder:999});
+      return;
+    }
+
+    tasks.forEach(t=>{
+      const subs=DB.subtasks.filter(s=>s.taskId===t.id&&!s.done);
+
+      if(!subs.length){
+        // Task has no subtasks — check if task is active today
+        const act=isActiveToday(t.workDays, t.due);
+        if(act.show) items.push({type:'task',proj:p,task:t,overdue:act.overdue,dueToday:act.dueToday,
+          order:t.dashOrder!=null?t.dashOrder:999});
+        return;
+      }
+
+      // Task has subtasks — show each subtask separately
+      subs.forEach(s=>{
+        const act=isActiveToday(s.workDays, s.due);
+        if(act.show) items.push({type:'sub',proj:p,task:t,sub:s,overdue:act.overdue,dueToday:act.dueToday,
+          order:s.dashOrder!=null?s.dashOrder:999});
+      });
+    });
+  });
+
+  items.sort((a,b)=>{
+    // Overdue first, then dueToday, then by dashOrder
+    if(a.overdue&&!b.overdue) return -1;
+    if(!a.overdue&&b.overdue) return 1;
+    if(a.dueToday&&!b.dueToday) return -1;
+    if(!a.dueToday&&b.dueToday) return 1;
+    return a.order-b.order;
+  });
+
+  if(!items.length){
+    el.innerHTML='<div class="empty"><div class="empty-icon">📅</div>'
+      +'<div style="margin-bottom:12px;color:var(--muted);">Sin elementos para hoy.<br>Asigna días de trabajo a tus proyectos, tareas o subtareas.</div></div>';
     return;
   }
-  el.innerHTML=tasks.map(t=>{
-    const p=DB.projects.find(x=>x.id===t.projectId)||{};
-    const subs=DB.subtasks.filter(s=>s.taskId===t.id);
-    const doneSubs=subs.filter(s=>s.done).length;
-    return taskCardHTML(t,p,subs,doneSubs,true);
-  }).join('');
+
+  const DAY_SHORT=['Do','Lu','Ma','Mi','Ju','Vi','Sá'];
+  let html='<div style="font-size:0.65rem;color:var(--muted);margin-bottom:10px;display:flex;justify-content:space-between;">'
+    +'<span>'+items.length+' elemento'+(items.length!==1?'s':'')+' para hoy</span>'
+    +'<button onclick="resetDashOrder()" style="background:none;border:none;color:var(--dim);font-size:0.62rem;cursor:pointer;font-family:inherit;">↺ Reset</button>'
+    +'</div>';
+
+  items.forEach((item,i)=>{
+    const p=item.proj;
+    const borderColor=item.overdue?'var(--red)':item.dueToday?'var(--yellow)':'var(--accent)';
+    const badge=item.overdue?'<span style="font-size:0.58rem;font-weight:800;color:var(--red);background:rgba(239,68,68,0.12);padding:1px 6px;border-radius:20px;">⚠️ Vencida</span>'
+      :item.dueToday?'<span style="font-size:0.58rem;font-weight:800;color:var(--yellow);background:rgba(234,179,8,0.12);padding:1px 6px;border-radius:20px;">🔔 Vence hoy</span>':'';
+
+    // Breadcrumb
+    let breadcrumb='<span style="font-size:0.6rem;font-weight:700;color:'+(p.color||'#888')+';">'+(p.emoji||'')+' '+p.name+'</span>';
+    if(item.task) breadcrumb+='<span style="font-size:0.6rem;color:var(--dim);"> › </span><span style="font-size:0.6rem;color:var(--muted);">'+item.task.title+'</span>';
+
+    // Main content
+    const main = item.type==='sub' ? item.sub : (item.type==='task' ? item.task : item.proj);
+    const priDot={critical:'🔴',high:'🟡',normal:'🟢',low:'⚪'}[main.priority||'normal']||'🟢';
+    const isDone=main.done||main.status==='done';
+    const mainId=main.id;
+    const moveUp=item.type==='sub'?'moveDashSub':'moveDash';
+
+    html+='<div style="background:var(--s1);border:2px solid '+borderColor+';border-radius:var(--r);margin-bottom:8px;overflow:hidden;">'
+      // Breadcrumb row
+      +'<div style="display:flex;align-items:center;gap:6px;padding:5px 12px;background:var(--bg);border-bottom:1px solid var(--border);">'
+      +breadcrumb
+      +(badge?' '+badge:'')
+      +'</div>'
+      // Main row
+      +'<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;">'
+      +'<span style="font-size:0.6rem;color:var(--dim);width:16px;text-align:center;flex-shrink:0;">'+(i+1)+'</span>'
+      +(item.type==='sub'
+        ?'<button class="sub-check'+(isDone?' done':'')+'" data-tsd="'+mainId+'" onclick="toggleSub(this.dataset.tsd);renderHoy();">'+(isDone?'✓':'')+'</button>'
+        :(item.type==='task'
+          ?'<button class="task-check'+(isDone?' done':'')+'" data-tt="'+mainId+'" onclick="toggleTask(this.dataset.tt)">'+(isDone?'✓':'')+'</button>'
+          :'<span style="width:20px;height:20px;border-radius:50%;background:'+p.color+'22;display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0;">'+p.emoji+'</span>'))
+      +'<div style="flex:1;min-width:0;">'
+      +'<div style="font-size:0.9rem;font-weight:600;'+(isDone?'text-decoration:line-through;color:var(--muted);':'')+'">'+priDot+' '+main.title+'</div>'
+      +(main.mins||main.due?'<div style="display:flex;gap:4px;margin-top:3px;flex-wrap:wrap;">'
+        +(main.mins?'<span class="mins-chip">⏱ '+main.mins+'min</span>':'')
+        +(main.due?'<span class="date-chip">🚨 '+fmtDate(main.due)+'</span>':'')
+        +'</div>':'')
+      +'</div>'
+      +'<div style="display:flex;flex-direction:column;gap:2px;">'
+      +'<button style="width:24px;height:24px;border:1.5px solid var(--border);border-radius:4px;background:var(--s2);color:var(--muted);cursor:pointer;font-size:0.7rem;" data-did="'+mainId+'" onclick="'+moveUp+'(this.dataset.did,-1)">↑</button>'
+      +'<button style="width:24px;height:24px;border:1.5px solid var(--border);border-radius:4px;background:var(--s2);color:var(--muted);cursor:pointer;font-size:0.7rem;" data-did2="'+mainId+'" onclick="'+moveUp+'(this.dataset.did2,1)">↓</button>'
+      +'</div>'
+      +(item.type==='sub'
+        ?'<button class="icon-btn" data-es="'+mainId+'" onclick="openEditSub(this.dataset.es)" style="width:26px;height:26px;font-size:0.75rem;">✏️</button>'
+        :(item.type==='task'
+          ?'<button class="icon-btn" data-et="'+mainId+'" onclick="openEditTask(this.dataset.et)" style="width:26px;height:26px;font-size:0.75rem;">✏️</button>'
+          :'<button class="icon-btn" data-ep="'+mainId+'" onclick="openEditProj(this.dataset.ep)" style="width:26px;height:26px;font-size:0.75rem;">✏️</button>'))
+      +'</div>'
+      +'</div>';
+  });
+
+  el.innerHTML=html;
+}
+
+function moveDash(id, dir){
+  const today=todayJsDay();
+  const taskItems=[];
+  DB.projects.forEach(p=>{
+    DB.tasks.filter(t=>t.projectId===p.id&&t.status!=='done').forEach(t=>{
+      const subs=DB.subtasks.filter(s=>s.taskId===t.id&&!s.done);
+      if(!subs.length){ const a=isActiveToday(t.workDays,t.due); if(a.show) taskItems.push(t); }
+    });
+    const tasks=DB.tasks.filter(t=>t.projectId===p.id&&t.status!=='done');
+    if(!tasks.length){ const a=isActiveToday(p.workDays,p.due); if(a.show) taskItems.push(p); }
+  });
+  taskItems.sort((a,b)=>(a.dashOrder!=null?a.dashOrder:999)-(b.dashOrder!=null?b.dashOrder:999));
+  taskItems.forEach((t,i)=>{ if(t.dashOrder==null) t.dashOrder=i; });
+  const idx=taskItems.findIndex(t=>t.id===id);
+  const newIdx=idx+dir;
+  if(newIdx<0||newIdx>=taskItems.length) return;
+  const tmp=taskItems[idx]; taskItems[idx]=taskItems[newIdx]; taskItems[newIdx]=tmp;
+  taskItems.forEach((t2,i)=>{
+    const db=DB.tasks.find(x=>x.id===t2.id)||DB.projects.find(x=>x.id===t2.id);
+    if(db) db.dashOrder=i;
+  });
+  save(); renderHoy();
+}
+
+function moveDashSub(id, dir){
+  const allSubs=[];
+  DB.tasks.filter(t=>t.status!=='done').forEach(t=>{
+    DB.subtasks.filter(s=>s.taskId===t.id&&!s.done).forEach(s=>{
+      const a=isActiveToday(s.workDays,s.due); if(a.show) allSubs.push(s);
+    });
+  });
+  allSubs.sort((a,b)=>(a.dashOrder!=null?a.dashOrder:999)-(b.dashOrder!=null?b.dashOrder:999));
+  allSubs.forEach((s,i)=>{ if(s.dashOrder==null) s.dashOrder=i; });
+  const idx=allSubs.findIndex(s=>s.id===id);
+  const newIdx=idx+dir;
+  if(newIdx<0||newIdx>=allSubs.length) return;
+  const tmp=allSubs[idx]; allSubs[idx]=allSubs[newIdx]; allSubs[newIdx]=tmp;
+  allSubs.forEach((s2,i)=>{ const db=DB.subtasks.find(x=>x.id===s2.id); if(db) db.dashOrder=i; });
+  save(); renderHoy();
+}
+
+function resetDashOrder(){
+  DB.tasks.forEach(t=>{ delete t.dashOrder; });
+  DB.subtasks.forEach(s=>{ delete s.dashOrder; });
+  DB.projects.forEach(p=>{ delete p.dashOrder; });
+  save(); renderHoy();
 }
 
 function taskCardHTML(t,p,subs,doneSubs,showProj){
@@ -985,6 +1200,7 @@ function openAddTask(projId){
   selTglVal('t-pri-group','normal');
   selTglVal('t-status-group','todo');
   buildAsgnGroup('t-asgn-group','Isaac');
+  setWorkDays([]);
   openModal('m-add-task');
 }
 
@@ -1003,6 +1219,7 @@ function openEditTask(id){
   selTglVal('t-pri-group',t.priority||'normal');
   selTglVal('t-status-group',t.status||'todo');
   buildAsgnGroup('t-asgn-group',t.assignee||'Isaac');
+  setWorkDays(t.workDays||[]);
   openModal('m-add-task');
 }
 
@@ -1019,6 +1236,7 @@ function saveTask(){
     assignee:getTglVal('t-asgn-group')||'Isaac',
     mins:parseInt(document.getElementById('t-mins').value)||null,
     due:document.getElementById('t-due').value||null,
+    workDays:getWorkDaysFrom('t-workdays-group'),
     notes:document.getElementById('t-notes').value.trim(),
   };
   if(editId){
@@ -1055,6 +1273,7 @@ function openAddSub(taskId){
   document.getElementById('s-del-btn').style.display='none';
   selTglVal('s-pri-group','normal');
   buildAsgnGroup('s-asgn-group','Isaac');
+  setWorkDaysTo('s-workdays-group',[]);
   openModal('m-add-sub');
 }
 
@@ -1069,6 +1288,7 @@ function openEditSub(id){
   document.getElementById('s-del-btn').style.display='flex';
   selTglVal('s-pri-group',s.priority||'normal');
   buildAsgnGroup('s-asgn-group',s.assignee||'Isaac');
+  setWorkDaysTo('s-workdays-group',s.workDays||[]);
   openModal('m-add-sub');
 }
 
@@ -1084,6 +1304,7 @@ function saveSub(){
     assignee:getTglVal('s-asgn-group')||'Isaac',
     mins:parseInt(document.getElementById('s-mins').value)||null,
     due:document.getElementById('s-due').value||null,
+    workDays:getWorkDaysFrom('s-workdays-group'),
     done:false,
   };
   if(editId){
@@ -1115,6 +1336,10 @@ function openAddProj(){
   document.getElementById('p-emoji').value='';
   document.getElementById('p-color').value='#6366f1';
   document.getElementById('p-del-btn').style.display='none';
+  document.getElementById('p-mins').value='';
+  document.getElementById('p-due').value='';
+  selTglVal('p-pri-group','normal');
+  setWorkDaysTo('p-workdays-group',[]);
   openModal('m-add-proj');
 }
 
@@ -1126,6 +1351,10 @@ function openEditProj(id){
   document.getElementById('p-emoji').value=p.emoji||'';
   document.getElementById('p-color').value=p.color||'#6366f1';
   document.getElementById('p-del-btn').style.display='flex';
+  document.getElementById('p-mins').value=p.mins||'';
+  document.getElementById('p-due').value=p.due||'';
+  selTglVal('p-pri-group',p.priority||'normal');
+  setWorkDaysTo('p-workdays-group',p.workDays||[]);
   openModal('m-add-proj');
 }
 
@@ -1137,6 +1366,10 @@ function saveProj(){
     id:editId||uid(), name,
     emoji:document.getElementById('p-emoji').value.trim()||'📁',
     color:document.getElementById('p-color').value||'#6366f1',
+    priority:getTglVal('p-pri-group')||'normal',
+    mins:parseInt(document.getElementById('p-mins').value)||null,
+    due:document.getElementById('p-due').value||null,
+    workDays:getWorkDaysFrom('p-workdays-group'),
   };
   if(editId){
     const idx=DB.projects.findIndex(x=>x.id===editId);
@@ -1160,6 +1393,25 @@ function deleteProj(){
 }
 
 // ── TOGGLE HELPERS ─────────────────────────────────────────
+function toggleWorkDay(btn){
+  btn.classList.toggle('on');
+}
+
+function getWorkDaysFrom(groupId){
+  return Array.from(document.querySelectorAll('#'+groupId+' .tgl-btn.on'))
+    .map(b=>parseInt(b.dataset.day));
+}
+
+function setWorkDaysTo(groupId, days){
+  document.querySelectorAll('#'+groupId+' .tgl-btn').forEach(b=>{
+    b.classList.toggle('on', (days||[]).includes(parseInt(b.dataset.day)));
+  });
+}
+
+// Legacy aliases for task modal
+function getWorkDays(){ return getWorkDaysFrom('t-workdays-group'); }
+function setWorkDays(days){ setWorkDaysTo('t-workdays-group',days); }
+
 function selTgl(groupId, btn){
   const el=document.getElementById(groupId); if(!el) return;
   el.querySelectorAll('.tgl-btn').forEach(b=>b.classList.remove('on'));
