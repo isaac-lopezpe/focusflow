@@ -295,6 +295,8 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
 .pomo-lbl{font-size:0.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
 
 .today-task{border-color:var(--accent) !important;}
+/* Force date inputs to show in browser's locale — we handle display via JS */
+input[type=date]{color-scheme:dark;}
 @media(min-width:600px){
   .view{max-width:600px;margin:0 auto;}
   .modal{border-radius:var(--r);margin-bottom:20px;}
@@ -365,7 +367,7 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
         <div class="set-title">🎯 Mi objetivo</div>
         <div class="field">
           <label class="fl">Fecha inicio (día 1 de 365)</label>
-          <input type="date" class="inp" id="cfg-start" onchange="saveCfg('startDate',this.value);renderHoy();">
+          <input type="text" class="inp" id="cfg-start" placeholder="DD/MM/AAAA" maxlength="10" oninput="onCfgStartInput(this.value)">
         </div>
         <div class="field">
           <label class="fl">Equipo / personas</label>
@@ -493,7 +495,7 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
     </div>
     <div class="row">
       <div class="field"><label class="fl">Duración estimada (min)</label><input type="number" class="inp" id="t-mins" placeholder="45" min="1"></div>
-      <div class="field"><label class="fl">Fecha límite</label><input type="date" class="inp" id="t-due"></div>
+      <div class="field"><label class="fl">Fecha límite (DD/MM/AAAA)</label><input type="text" class="inp" id="t-due-display" placeholder="DD/MM/AAAA" maxlength="10"><input type="hidden" id="t-due"></div>
     </div>
     <div class="field">
       <label class="fl">📅 Programar tarea</label>
@@ -508,7 +510,7 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
         <button class="tgl-btn" data-day="0" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Do</button>
       </div>
       <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;">¿Desde cuándo empezar? (opcional)</div>
-      <input type="date" class="inp" id="t-start-date" style="margin-bottom:8px;">
+      <input type="text" class="inp" id="t-start-display" placeholder="DD/MM/AAAA" maxlength="10" style="margin-bottom:8px;"><input type="hidden" id="t-start-date">
       <div style="background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);padding:8px 10px;font-size:0.62rem;color:var(--muted);line-height:1.6;">
         💡 <strong style="color:var(--text);">Ejemplos:</strong><br>
         • <strong style="color:var(--text);">Repetir cada semana:</strong> selecciona días + fecha límite<br>
@@ -545,7 +547,7 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
     </div>
     <div class="row">
       <div class="field"><label class="fl">Duración (min)</label><input type="number" class="inp" id="s-mins" placeholder="25" min="1"></div>
-      <div class="field"><label class="fl">Fecha límite</label><input type="date" class="inp" id="s-due"></div>
+      <div class="field"><label class="fl">Fecha límite (DD/MM/AAAA)</label><input type="text" class="inp" id="s-due-display" placeholder="DD/MM/AAAA" maxlength="10"><input type="hidden" id="s-due"></div>
     </div>
     <div class="field">
       <label class="fl">📅 Programar subtarea</label>
@@ -560,7 +562,7 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
         <button class="tgl-btn" data-day="0" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Do</button>
       </div>
       <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;">¿Desde cuándo empezar? (opcional)</div>
-      <input type="date" class="inp" id="s-start-date" style="margin-bottom:8px;">
+      <input type="text" class="inp" id="s-start-display" placeholder="DD/MM/AAAA" maxlength="10" style="margin-bottom:8px;"><input type="hidden" id="s-start-date">
       <div style="background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);padding:8px 10px;font-size:0.62rem;color:var(--muted);line-height:1.6;">
         💡 <strong style="color:var(--text);">Ejemplos:</strong><br>
         • <strong style="color:var(--text);">Repetir cada semana:</strong> selecciona días + fecha límite<br>
@@ -595,7 +597,7 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
     </div>
     <div class="row">
       <div class="field"><label class="fl">Duración estimada (min)</label><input type="number" class="inp" id="p-mins" placeholder="60" min="1"></div>
-      <div class="field"><label class="fl">Fecha límite</label><input type="date" class="inp" id="p-due"></div>
+      <div class="field"><label class="fl">Fecha límite (DD/MM/AAAA)</label><input type="text" class="inp" id="p-due-display" placeholder="DD/MM/AAAA" maxlength="10"><input type="hidden" id="p-due"></div>
     </div>
     <div class="field">
       <label class="fl">📅 Programar proyecto</label>
@@ -610,7 +612,7 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
         <button class="tgl-btn" data-day="0" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Do</button>
       </div>
       <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;">¿Desde cuándo empezar? (opcional)</div>
-      <input type="date" class="inp" id="p-start-date" style="margin-bottom:8px;">
+      <input type="text" class="inp" id="p-start-display" placeholder="DD/MM/AAAA" maxlength="10" style="margin-bottom:8px;"><input type="hidden" id="p-start-date">
       <div style="background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);padding:8px 10px;font-size:0.62rem;color:var(--muted);line-height:1.6;">
         💡 <strong style="color:var(--text);">Ejemplos:</strong><br>
         • <strong style="color:var(--text);">Repetir cada semana:</strong> selecciona días + fecha límite<br>
@@ -650,6 +652,44 @@ function cleanGistId(raw){
 
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2); }
 function fmtDate(d){ if(!d) return ''; const[y,m,day]=d.split('-'); return day+'/'+m+'/'+y; }
+
+// Convert DD/MM/YYYY text input → YYYY-MM-DD for storage
+function parseDisplayDate(str){
+  if(!str) return '';
+  str = str.trim();
+  // Already ISO format
+  if(/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+  // DD/MM/YYYY
+  const m = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if(m) return m[3]+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0');
+  return '';
+}
+
+// Format YYYY-MM-DD → DD/MM/YYYY for display in text inputs
+function toDisplayDate(iso){
+  if(!iso) return '';
+  const[y,mo,d]=iso.split('-');
+  return d+'/'+mo+'/'+y;
+}
+
+// Apply to a date input: show DD/MM/YYYY, store YYYY-MM-DD in hidden field
+function initDateInput(inputId, hiddenId, isoVal){
+  const inp = document.getElementById(inputId);
+  const hid = document.getElementById(hiddenId);
+  if(!inp) return;
+  inp.value = isoVal ? toDisplayDate(isoVal) : '';
+  inp.setAttribute('placeholder','DD/MM/AAAA');
+  inp.oninput = function(){
+    const parsed = parseDisplayDate(inp.value);
+    if(hid) hid.value = parsed;
+    inp.style.borderColor = (inp.value && !parsed) ? 'var(--red)' : '';
+  };
+  inp.onblur = function(){
+    const parsed = parseDisplayDate(inp.value);
+    if(parsed){ inp.value = toDisplayDate(parsed); if(hid) hid.value = parsed; }
+    else if(!inp.value){ if(hid) hid.value = ''; }
+  };
+}
 
 function seed(){
   const projs=[
@@ -1242,6 +1282,9 @@ function openAddTask(projId){
   buildAsgnGroup('t-asgn-group','Isaac');
   setWorkDays([]);
   document.getElementById('t-start-date').value='';
+  document.getElementById('t-due').value='';
+  initDateInput('t-due-display','t-due','');
+  initDateInput('t-start-display','t-start-date','');
   openModal('m-add-task');
 }
 
@@ -1261,7 +1304,10 @@ function openEditTask(id){
   selTglVal('t-status-group',t.status||'todo');
   buildAsgnGroup('t-asgn-group',t.assignee||'Isaac');
   setWorkDays(t.workDays||[]);
+  document.getElementById('t-due').value=t.due||'';
   document.getElementById('t-start-date').value=t.startDate||'';
+  initDateInput('t-due-display','t-due',t.due||'');
+  initDateInput('t-start-display','t-start-date',t.startDate||'');
   openModal('m-add-task');
 }
 
@@ -1317,7 +1363,10 @@ function openAddSub(taskId){
   selTglVal('s-pri-group','normal');
   buildAsgnGroup('s-asgn-group','Isaac');
   setWorkDaysTo('s-workdays-group',[]);
+  document.getElementById('s-due').value='';
   document.getElementById('s-start-date').value='';
+  initDateInput('s-due-display','s-due','');
+  initDateInput('s-start-display','s-start-date','');
   openModal('m-add-sub');
 }
 
@@ -1333,7 +1382,10 @@ function openEditSub(id){
   selTglVal('s-pri-group',s.priority||'normal');
   buildAsgnGroup('s-asgn-group',s.assignee||'Isaac');
   setWorkDaysTo('s-workdays-group',s.workDays||[]);
+  document.getElementById('s-due').value=s.due||'';
   document.getElementById('s-start-date').value=s.startDate||'';
+  initDateInput('s-due-display','s-due',s.due||'');
+  initDateInput('s-start-display','s-start-date',s.startDate||'');
   openModal('m-add-sub');
 }
 
@@ -1386,7 +1438,10 @@ function openAddProj(){
   document.getElementById('p-due').value='';
   selTglVal('p-pri-group','normal');
   setWorkDaysTo('p-workdays-group',[]);
+  document.getElementById('p-due').value='';
   document.getElementById('p-start-date').value='';
+  initDateInput('p-due-display','p-due','');
+  initDateInput('p-start-display','p-start-date','');
   openModal('m-add-proj');
 }
 
@@ -1402,7 +1457,10 @@ function openEditProj(id){
   document.getElementById('p-due').value=p.due||'';
   selTglVal('p-pri-group',p.priority||'normal');
   setWorkDaysTo('p-workdays-group',p.workDays||[]);
+  document.getElementById('p-due').value=p.due||'';
   document.getElementById('p-start-date').value=p.startDate||'';
+  initDateInput('p-due-display','p-due',p.due||'');
+  initDateInput('p-start-display','p-start-date',p.startDate||'');
   openModal('m-add-proj');
 }
 
@@ -1481,8 +1539,13 @@ function getTglVal(groupId){
 // ── CONFIG ─────────────────────────────────────────────────
 function saveCfg(key, val){ DB.settings[key]=val; save(); }
 
+function onCfgStartInput(val){
+  const iso = parseDisplayDate(val);
+  if(iso){ DB.settings.startDate=iso; save(); renderHoy(); }
+}
+
 function renderConfig(){
-  document.getElementById('cfg-start').value=DB.settings.startDate||'';
+  document.getElementById('cfg-start').value=toDisplayDate(DB.settings.startDate||'');
   document.getElementById('cfg-token').value=DB.settings.gistToken||'';
   document.getElementById('cfg-gist').value=DB.settings.gistId||'';
   document.getElementById('cfg-pomo-work').value=DB.settings.pomoWork||25;
