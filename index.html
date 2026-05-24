@@ -507,8 +507,14 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
         <button class="tgl-btn" data-day="6" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Sá</button>
         <button class="tgl-btn" data-day="0" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Do</button>
       </div>
-      <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;">¿Desde cuándo? (si no pones, desde hoy)</div>
-      <input type="date" class="inp" id="t-start-date" style="margin-bottom:0;">
+      <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;">¿Desde cuándo empezar? (opcional)</div>
+      <input type="date" class="inp" id="t-start-date" style="margin-bottom:8px;">
+      <div style="background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);padding:8px 10px;font-size:0.62rem;color:var(--muted);line-height:1.6;">
+        💡 <strong style="color:var(--text);">Ejemplos:</strong><br>
+        • <strong style="color:var(--text);">Repetir cada semana:</strong> selecciona días + fecha límite<br>
+        • <strong style="color:var(--text);">Un solo día específico:</strong> inicio = ese día, sin días seleccionados<br>
+        • <strong style="color:var(--text);">Un día que no es el límite:</strong> inicio = día que trabajarás, due date = límite real
+      </div>
     </div>
     <div class="field"><label class="fl">Notas</label><textarea class="inp ta" id="t-notes" rows="2" placeholder="Notas opcionales..."></textarea></div>
     <button class="btn btn-primary" onclick="saveTask()">GUARDAR TAREA</button>
@@ -553,8 +559,14 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
         <button class="tgl-btn" data-day="6" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Sá</button>
         <button class="tgl-btn" data-day="0" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Do</button>
       </div>
-      <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;">¿Desde cuándo?</div>
-      <input type="date" class="inp" id="s-start-date" style="margin-bottom:0;">
+      <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;">¿Desde cuándo empezar? (opcional)</div>
+      <input type="date" class="inp" id="s-start-date" style="margin-bottom:8px;">
+      <div style="background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);padding:8px 10px;font-size:0.62rem;color:var(--muted);line-height:1.6;">
+        💡 <strong style="color:var(--text);">Ejemplos:</strong><br>
+        • <strong style="color:var(--text);">Repetir cada semana:</strong> selecciona días + fecha límite<br>
+        • <strong style="color:var(--text);">Un solo día específico:</strong> inicio = ese día, sin días seleccionados<br>
+        • <strong style="color:var(--text);">Un día que no es el límite:</strong> inicio = día que trabajarás, due date = límite real
+      </div>
     </div>
     <button class="btn btn-primary" onclick="saveSub()">GUARDAR SUBTAREA</button>
     <button class="btn btn-danger btn-sm" id="s-del-btn" style="margin-top:8px;display:none;" onclick="deleteSub()">🗑️ Eliminar subtarea</button>
@@ -597,8 +609,14 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
         <button class="tgl-btn" data-day="6" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Sá</button>
         <button class="tgl-btn" data-day="0" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Do</button>
       </div>
-      <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;">¿Desde cuándo?</div>
-      <input type="date" class="inp" id="p-start-date" style="margin-bottom:0;">
+      <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;">¿Desde cuándo empezar? (opcional)</div>
+      <input type="date" class="inp" id="p-start-date" style="margin-bottom:8px;">
+      <div style="background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);padding:8px 10px;font-size:0.62rem;color:var(--muted);line-height:1.6;">
+        💡 <strong style="color:var(--text);">Ejemplos:</strong><br>
+        • <strong style="color:var(--text);">Repetir cada semana:</strong> selecciona días + fecha límite<br>
+        • <strong style="color:var(--text);">Un solo día específico:</strong> inicio = ese día, sin días seleccionados<br>
+        • <strong style="color:var(--text);">Un día que no es el límite:</strong> inicio = día que trabajarás, due date = límite real
+      </div>
     </div>
     <button class="btn btn-primary" onclick="saveProj()">GUARDAR PROYECTO</button>
     <button class="btn btn-danger btn-sm" id="p-del-btn" style="margin-top:8px;display:none;" onclick="deleteProj()">🗑️ Eliminar proyecto</button>
@@ -675,17 +693,24 @@ function isActiveToday(workDays, due, startDate){
   const todayStr = today.toISOString().split('T')[0];
   const todayDay = today.getDay();
 
-  // Overdue — always show (past due date and not done)
+  // CASE 1: Overdue — always show
   if(due && due < todayStr) return {show:true, overdue:true};
-  // Due today — always show
+
+  // CASE 2: Due today — always show
   if(due && due === todayStr) return {show:true, dueToday:true};
 
-  // Check workdays + range
+  // CASE 3: startDate = due = specific day in future
+  // Only show on that exact day (handled by case 2 when that day arrives)
+  // If startDate set but today is before it → don't show yet
+  if(startDate && startDate > todayStr) return {show:false};
+
+  // CASE 4: startDate is today with no workdays → show today
+  if(startDate && startDate === todayStr && (!workDays || workDays.length === 0)){
+    return {show:true};
+  }
+
+  // CASE 5: workDays range — today must be a selected weekday
   if(workDays && workDays.length > 0 && workDays.includes(todayDay)){
-    // Check startDate — don't show before start
-    if(startDate && startDate > todayStr) return {show:false};
-    // Check due date — don't show after due
-    if(due && due < todayStr) return {show:true, overdue:true};
     return {show:true};
   }
 
