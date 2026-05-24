@@ -495,7 +495,7 @@ input[type=date]{color-scheme:dark;}
     </div>
     <div class="row">
       <div class="field"><label class="fl">Duración estimada (min)</label><input type="number" class="inp" id="t-mins" placeholder="45" min="1"></div>
-      <div class="field"><label class="fl">Fecha límite (DD/MM/AAAA)</label><input type="text" class="inp" id="t-due-display" placeholder="DD/MM/AAAA" maxlength="10"><input type="hidden" id="t-due"></div>
+      <div class="field"><label class="fl">Fecha límite (DD/MM/AAAA)</label><div style="position:relative;display:flex;gap:0;"><input type="text" class="inp" id="t-due-display" placeholder="DD/MM/AAAA" maxlength="10" style="border-radius:var(--rs) 0 0 var(--rs);flex:1;"><button type="button" onclick="openCalPicker('t-due-display')" style="background:var(--s2);border:1.5px solid var(--border);border-left:none;border-radius:0 var(--rs) var(--rs) 0;padding:0 12px;cursor:pointer;font-size:1rem;color:var(--muted);flex-shrink:0;">📅</button></div><input type="hidden" id="t-due"></div>
     </div>
     <div class="field">
       <label class="fl">📅 Programar tarea</label>
@@ -510,7 +510,7 @@ input[type=date]{color-scheme:dark;}
         <button class="tgl-btn" data-day="0" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Do</button>
       </div>
       <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;">¿Desde cuándo empezar? (opcional)</div>
-      <input type="text" class="inp" id="t-start-display" placeholder="DD/MM/AAAA" maxlength="10" style="margin-bottom:8px;"><input type="hidden" id="t-start-date">
+      <div style="position:relative;display:flex;gap:0;"><input type="text" class="inp" id="t-start-display" placeholder="DD/MM/AAAA" maxlength="10" style="margin-bottom:8px;" style="border-radius:var(--rs) 0 0 var(--rs);flex:1;"><button type="button" onclick="openCalPicker('t-start-display')" style="background:var(--s2);border:1.5px solid var(--border);border-left:none;border-radius:0 var(--rs) var(--rs) 0;padding:0 12px;cursor:pointer;font-size:1rem;color:var(--muted);flex-shrink:0;">📅</button></div><input type="hidden" id="t-start-date">
       <div style="background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);padding:8px 10px;font-size:0.62rem;color:var(--muted);line-height:1.6;">
         💡 <strong style="color:var(--text);">Ejemplos:</strong><br>
         • <strong style="color:var(--text);">Repetir cada semana:</strong> selecciona días + fecha límite<br>
@@ -547,7 +547,7 @@ input[type=date]{color-scheme:dark;}
     </div>
     <div class="row">
       <div class="field"><label class="fl">Duración (min)</label><input type="number" class="inp" id="s-mins" placeholder="25" min="1"></div>
-      <div class="field"><label class="fl">Fecha límite (DD/MM/AAAA)</label><input type="text" class="inp" id="s-due-display" placeholder="DD/MM/AAAA" maxlength="10"><input type="hidden" id="s-due"></div>
+      <div class="field"><label class="fl">Fecha límite (DD/MM/AAAA)</label><div style="position:relative;display:flex;gap:0;"><input type="text" class="inp" id="s-due-display" placeholder="DD/MM/AAAA" maxlength="10" style="border-radius:var(--rs) 0 0 var(--rs);flex:1;"><button type="button" onclick="openCalPicker('s-due-display')" style="background:var(--s2);border:1.5px solid var(--border);border-left:none;border-radius:0 var(--rs) var(--rs) 0;padding:0 12px;cursor:pointer;font-size:1rem;color:var(--muted);flex-shrink:0;">📅</button></div><input type="hidden" id="s-due"></div>
     </div>
     <div class="field">
       <label class="fl">📅 Programar subtarea</label>
@@ -562,7 +562,7 @@ input[type=date]{color-scheme:dark;}
         <button class="tgl-btn" data-day="0" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Do</button>
       </div>
       <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;">¿Desde cuándo empezar? (opcional)</div>
-      <input type="text" class="inp" id="s-start-display" placeholder="DD/MM/AAAA" maxlength="10" style="margin-bottom:8px;"><input type="hidden" id="s-start-date">
+      <div style="position:relative;display:flex;gap:0;"><input type="text" class="inp" id="s-start-display" placeholder="DD/MM/AAAA" maxlength="10" style="margin-bottom:8px;" style="border-radius:var(--rs) 0 0 var(--rs);flex:1;"><button type="button" onclick="openCalPicker('s-start-display')" style="background:var(--s2);border:1.5px solid var(--border);border-left:none;border-radius:0 var(--rs) var(--rs) 0;padding:0 12px;cursor:pointer;font-size:1rem;color:var(--muted);flex-shrink:0;">📅</button></div><input type="hidden" id="s-start-date">
       <div style="background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);padding:8px 10px;font-size:0.62rem;color:var(--muted);line-height:1.6;">
         💡 <strong style="color:var(--text);">Ejemplos:</strong><br>
         • <strong style="color:var(--text);">Repetir cada semana:</strong> selecciona días + fecha límite<br>
@@ -597,7 +597,7 @@ input[type=date]{color-scheme:dark;}
     </div>
     <div class="row">
       <div class="field"><label class="fl">Duración estimada (min)</label><input type="number" class="inp" id="p-mins" placeholder="60" min="1"></div>
-      <div class="field"><label class="fl">Fecha límite (DD/MM/AAAA)</label><input type="text" class="inp" id="p-due-display" placeholder="DD/MM/AAAA" maxlength="10"><input type="hidden" id="p-due"></div>
+      <div class="field"><label class="fl">Fecha límite (DD/MM/AAAA)</label><div style="position:relative;display:flex;gap:0;"><input type="text" class="inp" id="p-due-display" placeholder="DD/MM/AAAA" maxlength="10" style="border-radius:var(--rs) 0 0 var(--rs);flex:1;"><button type="button" onclick="openCalPicker('p-due-display')" style="background:var(--s2);border:1.5px solid var(--border);border-left:none;border-radius:0 var(--rs) var(--rs) 0;padding:0 12px;cursor:pointer;font-size:1rem;color:var(--muted);flex-shrink:0;">📅</button></div><input type="hidden" id="p-due"></div>
     </div>
     <div class="field">
       <label class="fl">📅 Programar proyecto</label>
@@ -612,7 +612,7 @@ input[type=date]{color-scheme:dark;}
         <button class="tgl-btn" data-day="0" onclick="toggleWorkDay(this)" style="min-width:40px;padding:0 6px;">Do</button>
       </div>
       <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;">¿Desde cuándo empezar? (opcional)</div>
-      <input type="text" class="inp" id="p-start-display" placeholder="DD/MM/AAAA" maxlength="10" style="margin-bottom:8px;"><input type="hidden" id="p-start-date">
+      <div style="position:relative;display:flex;gap:0;"><input type="text" class="inp" id="p-start-display" placeholder="DD/MM/AAAA" maxlength="10" style="margin-bottom:8px;" style="border-radius:var(--rs) 0 0 var(--rs);flex:1;"><button type="button" onclick="openCalPicker('p-start-display')" style="background:var(--s2);border:1.5px solid var(--border);border-left:none;border-radius:0 var(--rs) var(--rs) 0;padding:0 12px;cursor:pointer;font-size:1rem;color:var(--muted);flex-shrink:0;">📅</button></div><input type="hidden" id="p-start-date">
       <div style="background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);padding:8px 10px;font-size:0.62rem;color:var(--muted);line-height:1.6;">
         💡 <strong style="color:var(--text);">Ejemplos:</strong><br>
         • <strong style="color:var(--text);">Repetir cada semana:</strong> selecciona días + fecha límite<br>
@@ -672,23 +672,63 @@ function toDisplayDate(iso){
   return d+'/'+mo+'/'+y;
 }
 
-// Apply to a date input: show DD/MM/YYYY, store YYYY-MM-DD in hidden field
-function initDateInput(inputId, hiddenId, isoVal){
-  const inp = document.getElementById(inputId);
-  const hid = document.getElementById(hiddenId);
-  if(!inp) return;
-  inp.value = isoVal ? toDisplayDate(isoVal) : '';
-  inp.setAttribute('placeholder','DD/MM/AAAA');
-  inp.oninput = function(){
-    const parsed = parseDisplayDate(inp.value);
-    if(hid) hid.value = parsed;
-    inp.style.borderColor = (inp.value && !parsed) ? 'var(--red)' : '';
+// Apply to a date input: show DD/MM/YYYY text + calendar picker button
+function initDateInput(displayId, hiddenId, isoVal){
+  const display = document.getElementById(displayId);
+  const hidden  = document.getElementById(hiddenId);
+  if(!display) return;
+
+  // Set initial display value
+  display.value = isoVal ? toDisplayDate(isoVal) : '';
+  if(hidden) hidden.value = isoVal||'';
+
+  // Find or create the paired native date input
+  const nativeId = displayId + '-native';
+  let native = document.getElementById(nativeId);
+  if(!native){
+    native = document.createElement('input');
+    native.type = 'date';
+    native.id = nativeId;
+    native.style.cssText = 'position:absolute;opacity:0;width:1px;height:1px;pointer-events:none;';
+    display.parentNode.appendChild(native);
+  }
+  native.value = isoVal||'';
+
+  // When native calendar picks a date → update display
+  native.onchange = function(){
+    const iso = native.value;
+    display.value = iso ? toDisplayDate(iso) : '';
+    if(hidden) hidden.value = iso||'';
+    display.style.borderColor = '';
   };
-  inp.onblur = function(){
-    const parsed = parseDisplayDate(inp.value);
-    if(parsed){ inp.value = toDisplayDate(parsed); if(hid) hid.value = parsed; }
-    else if(!inp.value){ if(hid) hid.value = ''; }
+
+  // Manual text input
+  display.oninput = function(){
+    const parsed = parseDisplayDate(display.value);
+    if(hidden) hidden.value = parsed||'';
+    if(native) native.value = parsed||'';
+    display.style.borderColor = (display.value && !parsed) ? 'var(--red)' : '';
   };
+  display.onblur = function(){
+    const parsed = parseDisplayDate(display.value);
+    if(parsed){
+      display.value = toDisplayDate(parsed);
+      if(hidden) hidden.value = parsed;
+      if(native) native.value = parsed;
+    } else if(!display.value){
+      if(hidden) hidden.value = '';
+      if(native) native.value = '';
+    }
+    display.style.borderColor = '';
+  };
+}
+
+// Open calendar picker for a date display input
+function openCalPicker(displayId){
+  const nativeId = displayId + '-native';
+  const native = document.getElementById(nativeId);
+  if(!native) return;
+  try{ native.showPicker(); } catch(e){ native.click(); }
 }
 
 function seed(){
